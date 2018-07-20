@@ -24,6 +24,7 @@
 - Fix: [#7773] Once research has been completed, player is still charged for research.
 - Fix: [#7786] Crash when importing a track design.
 - Fix: [#7793] Duplicate private keys generated.
+- Fix: [#7797] Add sprite font glyphs for Æ and Ø, needed for Norwegian and Danish.
 - Fix: [#7817] No sprite font glyph for interpunct.
 
 0.2.0 (2018-06-10)
