@@ -890,17 +890,17 @@ static void window_top_toolbar_paint(rct_window* w, rct_drawpixelinfo* dpi)
         }
         else if (gGameSpeed < GAMESPEED_NORMAL)
         {
-            gfx_draw_sprite(dpi, SPR_G2_RCT1_TEST_BUTTON_2, x + 3 , y + 12, 0);
+            gfx_draw_sprite(dpi, SPR_G2_RCT1_TEST_BUTTON_2, x + 3, y + 12, 0);
         }
         else if (gGameSpeed == GAMESPEED_HYPER)
         {
-            for (int32_t i = 0; i < 3; i++) 
+            for (int32_t i = 0; i < 3; i++)
             {
                 gfx_draw_sprite(dpi, SPR_G2_HYPER_ARROW, x + 5 + i * 5, y + 15, 0);
             }
         }
-        else 
-		{
+        else
+        {
             for (int32_t i = 0; i <= gGameSpeed - GAMESPEED_NORMAL; i++)
             {
                 gfx_draw_sprite(dpi, SPR_G2_SPEED_ARROW, x + 5 + i * 5, y + 15, 0);

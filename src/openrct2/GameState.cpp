@@ -32,7 +32,7 @@
 
 using namespace OpenRCT2;
 
-// game speed steps in percent. 25% is 1/4 of normal speed (100%).  
+// game speed steps in percent. 25% is 1/4 of normal speed (100%).
 static uint32_t GameSpeedSteps[GAMESPEED_HYPER + 1] = { 0, 25, 100, 200, 400, 1000, 10000 };
 
 GameState::GameState()
@@ -75,7 +75,7 @@ void GameState::InitAll(int32_t mapSize)
 
 void GameState::Update()
 {
-	static uint32_t pctUpdates = 0;
+    static uint32_t pctUpdates = 0;
     gInUpdateCode = true;
 
     uint32_t numUpdates;
