@@ -418,11 +418,13 @@ public:
         return nullptr;
     }
 
-    bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, money32 companyValue, const utf8* name) override
+    bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, const utf8* winner) override
     {
         // Scan the scenarios so we have a fresh list to query. This is to prevent the issue of scenario completions
         // not getting recorded, see #4951.
         Scan(language);
+        money32 companyValue = gScenarioCompletedCompanyValue;
+        //int16_t dayRecord = gScenarioCompletedDays;
 
         scenario_index_entry* scenario = GetByFilename(scenarioFileName);
         if (scenario != nullptr)
@@ -448,7 +450,7 @@ public:
                     SafeFree(highscore->name);
                 }
                 highscore->fileName = String::Duplicate(Path::GetFileName(scenario->path));
-                highscore->name = String::Duplicate(name);
+                highscore->name = String::Duplicate(winner);
                 highscore->company_value = companyValue;
                 SaveHighscores();
                 return true;
@@ -758,8 +760,8 @@ const scenario_index_entry* scenario_repository_get_by_index(size_t index)
     return repo->GetByIndex(index);
 }
 
-bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, money32 companyValue, const utf8* name)
+bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, const utf8* winner)
 {
     IScenarioRepository* repo = GetScenarioRepository();
-    return repo->TryRecordHighscore(LocalisationService_GetCurrentLanguage(), scenarioFileName, companyValue, name);
+    return repo->TryRecordHighscore(LocalisationService_GetCurrentLanguage(), scenarioFileName, winner);
 }

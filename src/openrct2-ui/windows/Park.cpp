@@ -1548,6 +1548,16 @@ static void window_park_objective_invalidate(rct_window* w)
     window_park_anchor_border_widgets(w);
 }
 
+uint32_t days_elapesd()
+{
+    uint32_t days = 1;   // First day is Day 1
+    for (uint16_t m = 0; m < gDateMonthsElapsed; m++)
+        days += days_in_month[m % MONTH_COUNT];
+
+    days += ((gDateMonthTicks * days_in_month[gDateMonthsElapsed % MONTH_COUNT]) >> 16) & 0xFF;
+    return days;
+}
+
 /**
  *
  *  rct2: 0x0066945C
@@ -1585,15 +1595,19 @@ static void window_park_objective_paint(rct_window* w, rct_drawpixelinfo* dpi)
         if ((uint32_t)gScenarioCompletedCompanyValue == 0x80000001)
         {
             // Objective failed
-            gfx_draw_string_left_wrapped(dpi, nullptr, x, y, 222, STR_OBJECTIVE_FAILED, COLOUR_BLACK);
+            y += gfx_draw_string_left_wrapped(dpi, nullptr, x, y, 222, STR_OBJECTIVE_FAILED, COLOUR_BLACK);
         }
         else
         {
             // Objective completed
             set_format_arg(0, money32, gScenarioCompletedCompanyValue);
-            gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_OBJECTIVE_ACHIEVED, COLOUR_BLACK);
+            y += gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_OBJECTIVE_ACHIEVED, COLOUR_BLACK);
         }
+        y += 5;
     }
+    y += 5;
+    set_format_arg(0, int32_t, date_elapsed_days());
+    gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_ELAPSED_DAYS, COLOUR_BLACK);
 }
 
 #pragma endregion

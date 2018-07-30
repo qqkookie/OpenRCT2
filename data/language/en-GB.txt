@@ -4568,6 +4568,16 @@ STR_6258    :Clear (transparent)
 STR_6259    :Disabled
 STR_6260    :Show blocked tiles
 STR_6261    :Show wide paths
+STR_6262    :Slow Speed
+STR_6263    :Slower Speed
+STR_6264    :{WINDOW_COLOUR_2}Elapsed days: {BLACK}{COMMA32}
+STR_6265    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}
+STR_6266    :{WINDOW_COLOUR_2}Days: {BLACK}{COMMA32}
+STR_6267    :{WINDOW_COLOUR_2}Days: {BLACK}N/A
+
+# STR_6264    :{WINDOW_COLOUR_2}Congratulations !{NEWLINE}{BLACK}You achieved your objective in {COMMA16} days with a company value of {CURRENCY} !
+# STR_6265    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}{NEWLINE}{WINDOW_COLOUR_2}Days: {BLACK}{COMMA16}
+# STR_6266    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}{NEWLINE}{WINDOW_COLOUR_2}Days: {BLACK}N/A
 
 #############
 # Scenarios #
