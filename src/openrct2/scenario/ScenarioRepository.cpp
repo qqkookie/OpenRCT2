@@ -117,8 +117,8 @@ static int32_t scenario_index_entry_CompareByIndex(const scenario_index_entry& e
 
 static void scenario_highscore_free(scenario_highscore_entry* highscore)
 {
-    SafeFree(highscore->fileName);
-    SafeFree(highscore->name);
+    SafeFree(highscore->scen_file);
+    SafeFree(highscore->scen_winner);
     SafeDelete(highscore);
 }
 
@@ -418,7 +418,7 @@ public:
         return nullptr;
     }
 
-    bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, money32 companyValue, const utf8* name) override
+    bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, const utf8* scen_winner) override
     {
         // Scan the scenarios so we have a fresh list to query. This is to prevent the issue of scenario completions
         // not getting recorded, see #4951.
@@ -430,7 +430,7 @@ public:
             // Check if record company value has been broken or the highscore is the same but no name is registered
             scenario_highscore_entry* highscore = scenario->highscore;
             if (highscore == nullptr || companyValue > highscore->company_value
-                || (String::IsNullOrEmpty(highscore->name) && companyValue == highscore->company_value))
+                || (String::IsNullOrEmpty(highscore->scen_winner) && companyValue == highscore->company_value))
             {
                 if (highscore == nullptr)
                 {
@@ -440,15 +440,15 @@ public:
                 }
                 else
                 {
-                    if (!String::IsNullOrEmpty(highscore->name))
+                    if (!String::IsNullOrEmpty(highscore->scen_winner))
                     {
                         highscore->timestamp = platform_get_datetime_now_utc();
                     }
-                    SafeFree(highscore->fileName);
-                    SafeFree(highscore->name);
+                    SafeFree(highscore->scen_file);
+                    SafeFree(highscore->scen_winner);
                 }
-                highscore->fileName = String::Duplicate(Path::GetFileName(scenario->path));
-                highscore->name = String::Duplicate(name);
+                highscore->scen_file = String::Duplicate(Path::GetFileName(scenario->path));
+                highscore->scen_winner = String::Duplicate(scen_winner);
                 highscore->company_value = companyValue;
                 SaveHighscores();
                 return true;
@@ -584,8 +584,8 @@ private:
             for (uint32_t i = 0; i < numHighscores; i++)
             {
                 scenario_highscore_entry* highscore = InsertHighscore();
-                highscore->fileName = fs.ReadString();
-                highscore->name = fs.ReadString();
+                highscore->scen_file = fs.ReadString();
+                highscore->scen_winner = fs.ReadString();
                 highscore->company_value = fs.ReadValue<money32>();
                 highscore->timestamp = fs.ReadValue<datetime64>();
             }
@@ -638,16 +638,16 @@ private:
                     bool notFound = true;
                     for (auto& highscore : _highscores)
                     {
-                        if (String::Equals(scBasic.Path, highscore->fileName, true))
+                        if (String::Equals(scBasic.Path, highscore->scen_file, true))
                         {
                             notFound = false;
 
                             // Check if legacy highscore is better
                             if (scBasic.CompanyValue > highscore->company_value)
                             {
-                                SafeFree(highscore->name);
+                                SafeFree(highscore->scen_winner);
                                 std::string name = rct2_to_utf8(scBasic.CompletedBy, RCT2_LANGUAGE_ID_ENGLISH_UK);
-                                highscore->name = String::Duplicate(name.c_str());
+                                highscore->scen_winner = String::Duplicate(name.c_str());
                                 highscore->company_value = scBasic.CompanyValue;
                                 highscore->timestamp = DATETIME64_MIN;
                                 break;
@@ -657,9 +657,9 @@ private:
                     if (notFound)
                     {
                         scenario_highscore_entry* highscore = InsertHighscore();
-                        highscore->fileName = String::Duplicate(scBasic.Path);
+                        highscore->scen_file = String::Duplicate(scBasic.Path);
                         std::string name = rct2_to_utf8(scBasic.CompletedBy, RCT2_LANGUAGE_ID_ENGLISH_UK);
-                        highscore->name = String::Duplicate(name.c_str());
+                        highscore->scen_winner = String::Duplicate(name.c_str());
                         highscore->company_value = scBasic.CompanyValue;
                         highscore->timestamp = DATETIME64_MIN;
                     }
@@ -698,7 +698,7 @@ private:
     {
         for (auto& highscore : _highscores)
         {
-            scenario_index_entry* scenerio = GetByFilename(highscore->fileName);
+            scenario_index_entry* scenerio = GetByFilename(highscore->scen_file);
             if (scenerio != nullptr)
             {
                 scenerio->highscore = highscore;
@@ -717,8 +717,8 @@ private:
             for (size_t i = 0; i < _highscores.size(); i++)
             {
                 const scenario_highscore_entry* highscore = _highscores[i];
-                fs.WriteString(highscore->fileName);
-                fs.WriteString(highscore->name);
+                fs.WriteString(highscore->scen_file);
+                fs.WriteString(highscore->scen_winner);
                 fs.WriteValue(highscore->company_value);
                 fs.WriteValue(highscore->timestamp);
             }
@@ -758,8 +758,8 @@ const scenario_index_entry* scenario_repository_get_by_index(size_t index)
     return repo->GetByIndex(index);
 }
 
-bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, money32 companyValue, const utf8* name)
+bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, const utf8* scen_winner)
 {
     IScenarioRepository* repo = GetScenarioRepository();
-    return repo->TryRecordHighscore(LocalisationService_GetCurrentLanguage(), scenarioFileName, companyValue, name);
+    return repo->TryRecordHighscore(LocalisationService_GetCurrentLanguage(), scenarioFileName, scen_winner);
 }

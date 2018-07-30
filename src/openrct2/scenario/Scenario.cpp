@@ -75,6 +75,9 @@ uint16_t gScenarioParkRatingWarningDays;
 money32 gScenarioCompletedCompanyValue;
 money32 gScenarioCompanyValueRecord;
 
+int32_t gScenarioCompletedDays;
+bool gScenarioEndedInSession = false;
+
 char gScenarioFileName[MAX_PATH];
 
 static int32_t scenario_create_ducks();
@@ -233,11 +236,11 @@ void scenario_success()
  *
  *  rct2: 0x006695E8
  */
-void scenario_success_submit_name(const char* name)
+void scenario_success_submit_name(const char* scen_winner)
 {
-    if (scenario_repository_try_record_highscore(gScenarioFileName, gScenarioCompanyValueRecord, name))
+    if (scenario_repository_try_record_highscore(gScenarioFileName, scen_winner))
     {
-        safe_strcpy(gScenarioCompletedBy, name, 32);
+        safe_strcpy(gScenarioCompletedBy, scen_winner, 32);
     }
     gParkFlags &= ~PARK_FLAGS_SCENARIO_COMPLETE_NAME_INPUT;
 }
