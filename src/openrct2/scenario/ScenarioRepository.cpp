@@ -423,6 +423,8 @@ public:
         // Scan the scenarios so we have a fresh list to query. This is to prevent the issue of scenario completions
         // not getting recorded, see #4951.
         Scan(language);
+        money32 companyValue = gScenarioCompletedCompanyValue;
+        //int16_t dayRecord = gScenarioCompletedDays;
 
         scenario_index_entry* scenario = GetByFilename(scenarioFileName);
         if (scenario != nullptr)

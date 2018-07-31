@@ -53,6 +53,16 @@ int32_t date_get_total_months(int32_t month, int32_t year)
     return (year - 1) * MONTH_COUNT + month;
 }
 
+int32_t date_elapsed_days()
+{
+    int32_t days = 1;   // First day is Day 1
+    for (uint16_t m = 0; m < gDateMonthsElapsed; m++)
+        days += days_in_month[m % MONTH_COUNT];
+
+    days += ((gDateMonthTicks * days_in_month[gDateMonthsElapsed % MONTH_COUNT]) >> 16) & 0xFF;
+    return days;
+}
+
 /**
  *
  *  rct2: 0x006C4494

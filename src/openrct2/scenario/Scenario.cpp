@@ -169,6 +169,7 @@ void scenario_begin()
     gScenarioCompletedCompanyValue = MONEY32_UNDEFINED;
     gTotalAdmissions = 0;
     gTotalIncomeFromAdmissions = 0;
+    gScenarioEndedInSession = false;
     safe_strcpy(gScenarioCompletedBy, "?", sizeof(gScenarioCompletedBy));
     park.ResetHistories();
     finance_reset_history();
@@ -197,6 +198,7 @@ void scenario_begin()
 
 static void scenario_end()
 {
+    gScenarioEndedInSession = true;
     window_close_by_class(WC_DROPDOWN);
     window_close_all_except_flags(WF_STICK_TO_BACK | WF_STICK_TO_FRONT);
     context_open_window_view(WV_PARK_OBJECTIVE);
@@ -220,14 +222,15 @@ void scenario_success()
 {
     const money32 companyValue = gCompanyValue;
 
-    gScenarioCompletedCompanyValue = companyValue;
+    gScenarioCompletedCompanyValue = gCompanyValue;
+    gScenarioCompletedDays = date_elapsed_days();
     peep_applause();
 
-    if (scenario_repository_try_record_highscore(gScenarioFileName, companyValue, nullptr))
+    if (scenario_repository_try_record_highscore(gScenarioFileName, nullptr))
     {
         // Allow name entry
         gParkFlags |= PARK_FLAGS_SCENARIO_COMPLETE_NAME_INPUT;
-        gScenarioCompanyValueRecord = companyValue;
+        gScenarioCompanyValueRecord = gScenarioCompletedCompanyValue;
     }
     scenario_end();
 }
