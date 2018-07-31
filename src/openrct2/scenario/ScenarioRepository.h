@@ -17,10 +17,11 @@ struct rct_object_entry;
 
 struct scenario_highscore_entry
 {
-    utf8* fileName;
-    utf8* name;
-    money32 company_value;
     datetime64 timestamp;
+    money32 company_value;
+    int32_t record_days;
+    utf8* scen_file;
+    utf8* scen_winner;
 };
 
 struct scenario_index_entry
@@ -69,7 +70,7 @@ interface IScenarioRepository
     virtual const scenario_index_entry* GetByInternalName(const utf8* name) const abstract;
     virtual const scenario_index_entry* GetByPath(const utf8* path) const abstract;
 
-    virtual bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, const utf8* winner)
+    virtual bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, const utf8* scen_winner)
         abstract;
 };
 
@@ -79,5 +80,5 @@ IScenarioRepository* GetScenarioRepository();
 void scenario_repository_scan();
 size_t scenario_repository_get_count();
 const scenario_index_entry* scenario_repository_get_by_index(size_t index);
-bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, const utf8* winner);
+bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, const utf8* scen_winner);
 void scenario_translate(scenario_index_entry* scenarioEntry, const struct rct_object_entry* stexObjectEntry);

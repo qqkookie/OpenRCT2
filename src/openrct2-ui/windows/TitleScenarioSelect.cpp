@@ -506,14 +506,19 @@ static void window_scenarioselect_paint(rct_window* w, rct_drawpixelinfo* dpi)
     {
         // TODO: Should probably be translatable
         const utf8* completedByName = "???";
-        if (!str_is_null_or_empty(scenario->highscore->name))
+        if (!str_is_null_or_empty(scenario->highscore->scen_winner))
         {
-            completedByName = scenario->highscore->name;
+            completedByName = scenario->highscore->scen_winner;
         }
         set_format_arg(0, rct_string_id, STR_STRING);
         set_format_arg(2, const char*, completedByName);
         set_format_arg(2 + sizeof(const char*), money32, scenario->highscore->company_value);
-        y += gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 170, STR_COMPLETED_BY_WITH_COMPANY_VALUE, COLOUR_BLACK);
+        y += gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 170, STR_COMPLETED_BY_WITH_COMPANY_VALUE_ALT, COLOUR_BLACK);
+        if (scenario->highscore->record_days > 0)
+        {
+            set_format_arg(0, int32_t, scenario->highscore->record_days);
+            gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 170, STR_COMPLETED_DAYS, COLOUR_BLACK);
+        }
     }
 }
 
@@ -593,9 +598,9 @@ static void window_scenarioselect_scrollpaint(rct_window* w, rct_drawpixelinfo* 
 
                     // Draw completion score
                     const utf8* completedByName = "???";
-                    if (!str_is_null_or_empty(scenario->highscore->name))
+                    if (!str_is_null_or_empty(scenario->highscore->scen_winner))
                     {
-                        completedByName = scenario->highscore->name;
+                        completedByName = scenario->highscore->scen_winner;
                     }
                     safe_strcpy(buffer, completedByName, 64);
                     set_format_arg(0, rct_string_id, STR_COMPLETED_BY);

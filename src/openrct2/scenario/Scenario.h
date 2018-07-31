@@ -377,7 +377,7 @@ extern uint16_t gScenarioParkRatingWarningDays;
 extern money32 gScenarioCompletedCompanyValue;
 extern money32 gScenarioCompanyValueRecord;
 
-extern int16_t gScenarioCompletedDays;
+extern int32_t gScenarioCompletedDays;
 extern bool gScenarioEndedInSession;
 
 extern rct_s6_info gS6Info;
