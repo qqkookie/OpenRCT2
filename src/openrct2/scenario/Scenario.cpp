@@ -74,9 +74,7 @@ money32 gScenarioObjectiveCurrency;
 uint16_t gScenarioParkRatingWarningDays;
 money32 gScenarioCompletedCompanyValue;
 money32 gScenarioCompanyValueRecord;
-
 int32_t gScenarioCompletedDays;
-bool gScenarioEndedInSession = false;
 
 char gScenarioFileName[MAX_PATH];
 
@@ -169,7 +167,6 @@ void scenario_begin()
     gScenarioCompletedCompanyValue = MONEY32_UNDEFINED;
     gTotalAdmissions = 0;
     gTotalIncomeFromAdmissions = 0;
-    gScenarioEndedInSession = false;
     safe_strcpy(gScenarioCompletedBy, "?", sizeof(gScenarioCompletedBy));
     park.ResetHistories();
     finance_reset_history();
@@ -198,7 +195,6 @@ void scenario_begin()
 
 static void scenario_end()
 {
-    gScenarioEndedInSession = true;
     window_close_by_class(WC_DROPDOWN);
     window_close_all_except_flags(WF_STICK_TO_BACK | WF_STICK_TO_FRONT);
     context_open_window_view(WV_PARK_OBJECTIVE);

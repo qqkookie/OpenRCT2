@@ -4570,9 +4570,9 @@ STR_6260    :Show blocked tiles
 STR_6261    :Show wide paths
 STR_6262    :Slow Speed
 STR_6263    :Slower Speed
-STR_6264    :{WINDOW_COLOUR_2}Today:  {BLACK}{COMMA32} days
+STR_6264    :{WINDOW_COLOUR_2}Elapsed: {BLACK}{COMMA32} days
 STR_6265    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}
-STR_6266    :{WINDOW_COLOUR_2}Record days:  {BLACK}{COMMA32}
+STR_6266    :{WINDOW_COLOUR_2}Record days: {BLACK}{COMMA32}
 
 #############
 # Scenarios #

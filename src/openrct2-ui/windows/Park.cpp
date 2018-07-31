@@ -1503,7 +1503,7 @@ static void window_park_objective_mouseup(rct_window* w, rct_widgetindex widgetI
  */
 static void window_park_objective_resize(rct_window* w)
 {
-    window_set_resize(w, 230, 241, 230, 241);
+    window_set_resize(w, 230, 226, 230, 226);
 }
 
 /**
@@ -1578,9 +1578,7 @@ static void window_park_objective_paint(rct_window* w, rct_drawpixelinfo* dpi)
 
     y += gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 221, ObjectiveNames[gScenarioObjectiveType], COLOUR_BLACK);
     y += 5;
-    set_format_arg(0, int32_t, date_elapsed_days());
-    y += gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_TODAY_DAYS, COLOUR_BLACK);
-    y += 10;
+
     // Objective outcome
     if (gScenarioCompletedCompanyValue != MONEY32_UNDEFINED)
     {
@@ -1597,6 +1595,11 @@ static void window_park_objective_paint(rct_window* w, rct_drawpixelinfo* dpi)
             set_format_arg(0, int32_t, gScenarioCompletedDays);
             gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_COMPLETED_DAYS, COLOUR_BLACK);
         }
+    }
+    else
+    {
+        set_format_arg(0, int32_t, date_elapsed_days());
+        gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_ELAPSED_DAYS, COLOUR_BLACK);
     }
 }
 
