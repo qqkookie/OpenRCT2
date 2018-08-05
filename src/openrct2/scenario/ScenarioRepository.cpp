@@ -117,8 +117,8 @@ static int32_t scenario_index_entry_CompareByIndex(const scenario_index_entry& e
 
 static void scenario_highscore_free(scenario_highscore_entry* highscore)
 {
-    SafeFree(highscore->fileName);
-    SafeFree(highscore->name);
+    SafeFree(highscore->scen_file);
+    SafeFree(highscore->scen_winner);
     SafeDelete(highscore);
 }
 
@@ -320,7 +320,9 @@ private:
 class ScenarioRepository final : public IScenarioRepository
 {
 private:
-    static constexpr uint32_t HighscoreFileVersion = 1;
+    static constexpr uint32_t MAGIC_NUMBER = 0x3248524f; // ORH2
+    static constexpr uint32_t VERSION = 2;
+    bool old_highscores = false;
 
     std::shared_ptr<IPlatformEnvironment> const _env;
     ScenarioFileIndex const _fileIndex;
@@ -418,19 +420,24 @@ public:
         return nullptr;
     }
 
-    bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, money32 companyValue, const utf8* name) override
+    bool TryRecordHighscore(int32_t language, const utf8* scenarioFileName, const utf8* scen_winner) override
     {
         // Scan the scenarios so we have a fresh list to query. This is to prevent the issue of scenario completions
         // not getting recorded, see #4951.
         Scan(language);
+        money32 companyValue = gScenarioCompletedCompanyValue;
+        int32_t dayRecord = gScenarioCompletedDays;
 
         scenario_index_entry* scenario = GetByFilename(scenarioFileName);
         if (scenario != nullptr)
         {
             // Check if record company value has been broken or the highscore is the same but no name is registered
+            // Or, if record days to complete has been broken or same but no name is registered
             scenario_highscore_entry* highscore = scenario->highscore;
             if (highscore == nullptr || companyValue > highscore->company_value
-                || (String::IsNullOrEmpty(highscore->name) && companyValue == highscore->company_value))
+                || highscore->record_days == 0 || dayRecord < highscore->record_days
+                || (String::IsNullOrEmpty(highscore->scen_winner)
+                    && (companyValue == highscore->company_value) || (dayRecord == highscore->record_days)))
             {
                 if (highscore == nullptr)
                 {
@@ -440,16 +447,19 @@ public:
                 }
                 else
                 {
-                    if (!String::IsNullOrEmpty(highscore->name))
+                    if (!String::IsNullOrEmpty(highscore->scen_winner))
                     {
                         highscore->timestamp = platform_get_datetime_now_utc();
                     }
-                    SafeFree(highscore->fileName);
-                    SafeFree(highscore->name);
+                    SafeFree(highscore->scen_file);
+                    SafeFree(highscore->scen_winner);
                 }
-                highscore->fileName = String::Duplicate(Path::GetFileName(scenario->path));
-                highscore->name = String::Duplicate(name);
-                highscore->company_value = companyValue;
+                highscore->scen_file = String::Duplicate(Path::GetFileName(scenario->path));
+                highscore->scen_winner = String::Duplicate(scen_winner);
+                if (companyValue > highscore->company_value )
+                    highscore->company_value = companyValue;
+                if (highscore->record_days == 0 || dayRecord < highscore->record_days)
+                    highscore->record_days = dayRecord;
                 SaveHighscores();
                 return true;
             }
@@ -562,6 +572,46 @@ private:
 
     void LoadScores()
     {
+        std::string path = _env->GetFilePath(PATHID::SCORES_ALT);
+        if (!platform_file_exists(path.c_str()))
+        {
+            path = _env->GetFilePath(PATHID::SCORES);
+            if (!platform_file_exists(path.c_str()))
+                return;
+        }
+
+        try
+        {
+            auto fs = FileStream(path, FILE_MODE_OPEN);
+            uint32_t magic = fs.ReadValue<uint32_t>();
+            if (magic == 1)
+            {
+                LoadScoresOld();
+                return;
+            }
+            fs.ReadValue<uint32_t>();   // VERSION
+
+            ClearHighscores();
+
+            uint32_t numHighscores = fs.ReadValue<uint32_t>();
+            for (uint32_t i = 0; i < numHighscores; i++)
+            {
+                scenario_highscore_entry* highscore = InsertHighscore();
+                highscore->timestamp = fs.ReadValue<datetime64>();
+                highscore->company_value = fs.ReadValue<money32>();
+                highscore->record_days = fs.ReadValue<int32_t>();
+                highscore->scen_file = fs.ReadString();
+                highscore->scen_winner = fs.ReadString();
+            }
+        }
+        catch (const std::exception&)
+        {
+            Console::Error::WriteLine("Error reading highscores.");
+        }
+    }
+
+    void LoadScoresOld()
+    {
         std::string path = _env->GetFilePath(PATHID::SCORES);
         if (!platform_file_exists(path.c_str()))
         {
@@ -584,15 +634,16 @@ private:
             for (uint32_t i = 0; i < numHighscores; i++)
             {
                 scenario_highscore_entry* highscore = InsertHighscore();
-                highscore->fileName = fs.ReadString();
-                highscore->name = fs.ReadString();
+                highscore->scen_file = fs.ReadString();
+                highscore->scen_winner = fs.ReadString();
                 highscore->company_value = fs.ReadValue<money32>();
                 highscore->timestamp = fs.ReadValue<datetime64>();
             }
+            old_highscores = true;
         }
         catch (const std::exception&)
         {
-            Console::Error::WriteLine("Error reading highscores.");
+            Console::Error::WriteLine("Error reading old highscores.");
         }
     }
 
@@ -638,16 +689,16 @@ private:
                     bool notFound = true;
                     for (auto& highscore : _highscores)
                     {
-                        if (String::Equals(scBasic.Path, highscore->fileName, true))
+                        if (String::Equals(scBasic.Path, highscore->scen_file, true))
                         {
                             notFound = false;
 
                             // Check if legacy highscore is better
                             if (scBasic.CompanyValue > highscore->company_value)
                             {
-                                SafeFree(highscore->name);
+                                SafeFree(highscore->scen_winner);
                                 std::string name = rct2_to_utf8(scBasic.CompletedBy, RCT2_LANGUAGE_ID_ENGLISH_UK);
-                                highscore->name = String::Duplicate(name.c_str());
+                                highscore->scen_winner = String::Duplicate(name.c_str());
                                 highscore->company_value = scBasic.CompanyValue;
                                 highscore->timestamp = DATETIME64_MIN;
                                 break;
@@ -657,9 +708,9 @@ private:
                     if (notFound)
                     {
                         scenario_highscore_entry* highscore = InsertHighscore();
-                        highscore->fileName = String::Duplicate(scBasic.Path);
+                        highscore->scen_file = String::Duplicate(scBasic.Path);
                         std::string name = rct2_to_utf8(scBasic.CompletedBy, RCT2_LANGUAGE_ID_ENGLISH_UK);
-                        highscore->name = String::Duplicate(name.c_str());
+                        highscore->scen_winner = String::Duplicate(name.c_str());
                         highscore->company_value = scBasic.CompanyValue;
                         highscore->timestamp = DATETIME64_MIN;
                     }
@@ -698,7 +749,7 @@ private:
     {
         for (auto& highscore : _highscores)
         {
-            scenario_index_entry* scenerio = GetByFilename(highscore->fileName);
+            scenario_index_entry* scenerio = GetByFilename(highscore->scen_file);
             if (scenerio != nullptr)
             {
                 scenerio->highscore = highscore;
@@ -708,19 +759,22 @@ private:
 
     void SaveHighscores()
     {
-        std::string path = _env->GetFilePath(PATHID::SCORES);
+        // Don't overwrite existing old V1 highscore.dat, use alternate file.
+        std::string path = _env->GetFilePath(old_highscores ? PATHID::SCORES_ALT : PATHID::SCORES);
         try
         {
             auto fs = FileStream(path, FILE_MODE_WRITE);
-            fs.WriteValue<uint32_t>(HighscoreFileVersion);
+            fs.WriteValue<uint32_t>(MAGIC_NUMBER);
+            fs.WriteValue<uint32_t>(VERSION);
             fs.WriteValue<uint32_t>((uint32_t)_highscores.size());
             for (size_t i = 0; i < _highscores.size(); i++)
             {
                 const scenario_highscore_entry* highscore = _highscores[i];
-                fs.WriteString(highscore->fileName);
-                fs.WriteString(highscore->name);
-                fs.WriteValue(highscore->company_value);
                 fs.WriteValue(highscore->timestamp);
+                fs.WriteValue(highscore->company_value);
+                fs.WriteValue(highscore->record_days);
+                fs.WriteString(highscore->scen_file);
+                fs.WriteString(highscore->scen_winner);
             }
         }
         catch (const std::exception&)
@@ -758,8 +812,8 @@ const scenario_index_entry* scenario_repository_get_by_index(size_t index)
     return repo->GetByIndex(index);
 }
 
-bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, money32 companyValue, const utf8* name)
+bool scenario_repository_try_record_highscore(const utf8* scenarioFileName, const utf8* scen_winner)
 {
     IScenarioRepository* repo = GetScenarioRepository();
-    return repo->TryRecordHighscore(LocalisationService_GetCurrentLanguage(), scenarioFileName, companyValue, name);
+    return repo->TryRecordHighscore(LocalisationService_GetCurrentLanguage(), scenarioFileName, scen_winner);
 }

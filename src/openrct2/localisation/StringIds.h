@@ -3931,6 +3931,10 @@ enum
     STR_SPEED_SLOW = 6262,
     STR_SPEED_SLOWER = 6263,
 
+    STR_ELAPSED_DAYS = 6264,
+    STR_COMPLETED_BY_WITH_COMPANY_VALUE_ALT = 6265,
+    STR_COMPLETED_DAYS = 6266,
+
     // Have to include resource strings (from scenarios and objects) for the time being now that language is partially working
     STR_COUNT = 32768
 };

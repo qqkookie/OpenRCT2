@@ -74,6 +74,7 @@ money32 gScenarioObjectiveCurrency;
 uint16_t gScenarioParkRatingWarningDays;
 money32 gScenarioCompletedCompanyValue;
 money32 gScenarioCompanyValueRecord;
+int32_t gScenarioCompletedDays;
 
 char gScenarioFileName[MAX_PATH];
 
@@ -217,14 +218,15 @@ void scenario_success()
 {
     const money32 companyValue = gCompanyValue;
 
-    gScenarioCompletedCompanyValue = companyValue;
+    gScenarioCompletedCompanyValue = gCompanyValue;
+    gScenarioCompletedDays = date_elapsed_days();
     peep_applause();
 
-    if (scenario_repository_try_record_highscore(gScenarioFileName, companyValue, nullptr))
+    if (scenario_repository_try_record_highscore(gScenarioFileName, nullptr))
     {
         // Allow name entry
         gParkFlags |= PARK_FLAGS_SCENARIO_COMPLETE_NAME_INPUT;
-        gScenarioCompanyValueRecord = companyValue;
+        gScenarioCompanyValueRecord = gScenarioCompletedCompanyValue;
     }
     scenario_end();
 }
@@ -233,11 +235,11 @@ void scenario_success()
  *
  *  rct2: 0x006695E8
  */
-void scenario_success_submit_name(const char* name)
+void scenario_success_submit_name(const char* scen_winner)
 {
-    if (scenario_repository_try_record_highscore(gScenarioFileName, gScenarioCompanyValueRecord, name))
+    if (scenario_repository_try_record_highscore(gScenarioFileName, scen_winner))
     {
-        safe_strcpy(gScenarioCompletedBy, name, 32);
+        safe_strcpy(gScenarioCompletedBy, scen_winner, 32);
     }
     gParkFlags &= ~PARK_FLAGS_SCENARIO_COMPLETE_NAME_INPUT;
 }

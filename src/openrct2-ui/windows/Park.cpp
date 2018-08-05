@@ -1591,8 +1591,15 @@ static void window_park_objective_paint(rct_window* w, rct_drawpixelinfo* dpi)
         {
             // Objective completed
             set_format_arg(0, money32, gScenarioCompletedCompanyValue);
-            gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_OBJECTIVE_ACHIEVED, COLOUR_BLACK);
+            y += gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_OBJECTIVE_ACHIEVED, COLOUR_BLACK);
+            set_format_arg(0, int32_t, gScenarioCompletedDays);
+            gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_COMPLETED_DAYS, COLOUR_BLACK);
         }
+    }
+    else
+    {
+        set_format_arg(0, int32_t, date_elapsed_days());
+        gfx_draw_string_left_wrapped(dpi, gCommonFormatArgs, x, y, 222, STR_ELAPSED_DAYS, COLOUR_BLACK);
     }
 }
 

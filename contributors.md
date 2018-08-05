@@ -77,6 +77,7 @@ The following people are not part of the development team, but have been contrib
 * Albert Morgese (Fusxfaranto) - Shop auto-rotation, unicode uppercasing.
 * Olivier Wervers (oli414) - Remove unused objects command, various bugfixes
 * (qqkookie) - Slow game speed step.
+* Jacob Wallraff (thyeggman), (qqkookie) - Speedrunning features
 
 ## Bug fixes
 * (halfbro)

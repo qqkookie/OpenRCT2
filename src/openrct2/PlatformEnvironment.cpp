@@ -223,6 +223,7 @@ const char * PlatformEnvironment::FileNames[] =
     "servers.cfg",          // NETWORK_SERVERS
     "users.json",           // NETWORK_USERS
     "highscores.dat",       // SCORES
+    "highscores2.dat",      // SCORES_ALT
     "scores.dat",           // SCORES (LEGACY)
     "Saved Games" PATH_SEPARATOR "scores.dat",  // SCORES (RCT2)
     "changelog.txt"         // CHANGELOG
