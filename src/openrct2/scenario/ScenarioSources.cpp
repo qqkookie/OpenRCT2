@@ -162,7 +162,7 @@ namespace ScenarioSources
         { SC_ROMAN_VILLAGE,             "Roman Village",        SCENARIO_CATEGORY_CHALLENGING   },
         { SC_SWAMP_COVE,                "Swamp Cove",           SCENARIO_CATEGORY_CHALLENGING   },
         { SC_ADRENALINE_HEIGHTS,        "Adrenaline Heights",   SCENARIO_CATEGORY_CHALLENGING   },
-        { SC_UTOPIA,                    "Utopia",               SCENARIO_CATEGORY_CHALLENGING   },
+        { SC_UTOPIA_PARK,               "Utopia Park",          SCENARIO_CATEGORY_CHALLENGING   },
         { SC_ROTTING_HEIGHTS,           "Rotting Heights",      SCENARIO_CATEGORY_EXPERT        },
         { SC_FIASCO_FOREST,             "Fiasco Forest",        SCENARIO_CATEGORY_EXPERT        },
         { SC_PICKLE_PARK,               "Pickle Park",          SCENARIO_CATEGORY_EXPERT        },
