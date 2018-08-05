@@ -1048,8 +1048,9 @@ static void window_finances_profit_graph_paint(rct_window* w, rct_drawpixelinfo*
     graphRight = w->x + pageWidget->right - 4;
     graphBottom = w->y + pageWidget->bottom - 4;
 
-    // Weekly profit
-    money32 weeklyPofit = gCurrentProfit;
+    // Weekly profit approximation
+    money32 weeklyPofit = ( gWeeklyProfitAverageDivisor != 0 ?
+        (7 * gWeeklyProfitAverageDividend / gWeeklyProfitAverageDivisor) : gWeeklyProfitAverageDividend);
     gfx_draw_string_left(
         dpi, weeklyPofit >= 0 ? STR_FINANCES_WEEKLY_PROFIT_POSITIVE : STR_FINANCES_WEEKLY_PROFIT_LOSS, &weeklyPofit,
         COLOUR_BLACK, graphLeft, graphTop - 11);
