@@ -179,6 +179,9 @@ void window_guest_list_init_vars()
  */
 rct_window* window_guest_list_open()
 {
+    if (window_toggle(WC_GUEST_LIST))
+        return nullptr;
+
     rct_window* window;
 
     // Check if window is already open

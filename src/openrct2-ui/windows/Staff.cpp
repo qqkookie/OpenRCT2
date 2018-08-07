@@ -314,6 +314,11 @@ rct_window* window_staff_open(rct_peep* peep)
         w->max_width = 500;
         w->max_height = 450;
     }
+    else
+    {
+        window_close(w);
+        return nullptr;
+    }
     w->page = 0;
     window_invalidate(w);
 

@@ -53,6 +53,8 @@ enum {
     WIDX_MUTE,
     WIDX_ZOOM_OUT,
     WIDX_ZOOM_IN,
+
+    WIDX_ROTATE_CCW,
     WIDX_ROTATE,
     WIDX_VIEW_MENU,
     WIDX_MAP,
@@ -77,6 +79,7 @@ enum {
     WIDX_NETWORK,
 
     WIDX_SEPARATOR,
+
 };
 
 validate_global_widx(WC_TOP_TOOLBAR, WIDX_PAUSE);
@@ -169,6 +172,7 @@ static constexpr const int32_t left_aligned_widgets_order[] = {
 
     WIDX_ZOOM_OUT,
     WIDX_ZOOM_IN,
+    WIDX_ROTATE_CCW,
     WIDX_ROTATE,
     WIDX_VIEW_MENU,
     WIDX_MAP,
@@ -203,7 +207,8 @@ static rct_widget window_top_toolbar_widgets[] = {
     { WWT_TRNBTN,   0,  0x00DC + 30,    0x00F9 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_TOOLBAR_MUTE,           STR_TOOLBAR_MUTE_TIP },             // Mute
     { WWT_TRNBTN,   1,  0x0046 + 30,    0x0063 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ZOOM_OUT,          STR_ZOOM_OUT_TIP },                 // Zoom out
     { WWT_TRNBTN,   1,  0x0064 + 30,    0x0081 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ZOOM_IN,           STR_ZOOM_IN_TIP },                  // Zoom in
-    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ROTATE,            STR_ROTATE_TIP },                   // Rotate camera
+    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_ROTATE_CCW,            STR_ROTATE_CCW_TIP },                   // Rotate camera CCW
+    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ROTATE,            STR_ROTATE_CW_TIP },                   // Rotate camera CW
     { WWT_TRNBTN,   1,  0x00A0 + 30,    0x00BD + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_VIEW,              STR_VIEW_OPTIONS_TIP },             // Transparency menu
     { WWT_TRNBTN,   1,  0x00BE + 30,    0x00DB + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_MAP,               STR_SHOW_MAP_TIP },                 // Map
     { WWT_TRNBTN,   2,  0x010B, 0x0128, 0,                      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_LAND,              STR_ADJUST_LAND_TIP },              // Land
@@ -337,6 +342,15 @@ static void window_top_toolbar_mouseup(rct_window* w, rct_widgetindex widgetInde
         case WIDX_ZOOM_IN:
             if ((mainWindow = window_get_main()) != nullptr)
                 window_zoom_in(mainWindow, false);
+            break;
+        case WIDX_ROTATE:
+        case WIDX_ROTATE_CCW:
+            if ((mainWindow = window_get_main()) != nullptr)
+            {
+                window_rotate_camera(mainWindow,
+                    (widgetIndex == WIDX_ROTATE_CCW ? -1 : 1));
+                // window_invalidate(w);
+            }
             break;
         case WIDX_CLEAR_SCENERY:
             toggle_clear_scenery_window(w, WIDX_CLEAR_SCENERY);
@@ -514,7 +528,7 @@ static void window_top_toolbar_mousedown(rct_window* w, rct_widgetindex widgetIn
             top_toolbar_init_fastforward_menu(w, widget);
             break;
         case WIDX_ROTATE:
-            top_toolbar_init_rotate_menu(w, widget);
+            // top_toolbar_init_rotate_menu(w, widget);
             break;
         case WIDX_DEBUG:
             top_toolbar_init_debug_menu(w, widget);
@@ -3114,6 +3128,7 @@ static void top_toolbar_fastforward_menu_dropdown(int16_t dropdownIndex)
     }
 }
 
+/*
 static void top_toolbar_init_rotate_menu(rct_window* w, rct_widget* widget)
 {
     gDropdownItemsFormat[0] = STR_ROTATE_CLOCKWISE;
@@ -3124,6 +3139,7 @@ static void top_toolbar_init_rotate_menu(rct_window* w, rct_widget* widget)
 
     gDropdownDefaultIndex = DDIDX_ROTATE_CLOCKWISE;
 }
+*/
 
 static void top_toolbar_rotate_menu_dropdown(int16_t dropdownIndex)
 {
@@ -3170,7 +3186,7 @@ static void top_toolbar_init_debug_menu(rct_window* w, rct_widget* widget)
     }
 
     dropdown_set_checked(DDIDX_DEBUG_PAINT, window_find_by_class(WC_DEBUG_PAINT) != nullptr);
-    gDropdownDefaultIndex = DDIDX_CONSOLE;
+    // gDropdownDefaultIndex = DDIDX_CONSOLE;
 }
 
 static void top_toolbar_init_network_menu(rct_window* w, rct_widget* widget)
@@ -3307,7 +3323,8 @@ static void top_toolbar_init_view_menu(rct_window* w, rct_widget* widget)
     if (mainViewport->flags & VIEWPORT_FLAG_HIGHLIGHT_PATH_ISSUES)
         dropdown_set_checked(DDIDX_HIGHLIGHT_PATH_ISSUES, true);
 
-    gDropdownDefaultIndex = DDIDX_UNDERGROUND_INSIDE;
+    // gDropdownDefaultIndex = DDIDX_UNDERGROUND_INSIDE;
+    gDropdownDefaultIndex = DDIDX_SEETHROUGH_SCENARY;
 }
 
 /**

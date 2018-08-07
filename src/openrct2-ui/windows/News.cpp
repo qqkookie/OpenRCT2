@@ -83,6 +83,9 @@ static rct_window_event_list window_news_events = {
  */
 rct_window* window_news_open()
 {
+    if (window_toggle(WC_RECENT_NEWS))
+        return nullptr;
+
     rct_window* window;
 
     // Check if window is already open

@@ -464,10 +464,10 @@ enum
 
 #define WC_MAIN_WINDOW__0 0
 #define WC_TOP_TOOLBAR__WIDX_PAUSE 0
-#define WC_TOP_TOOLBAR__WIDX_LAND 8
-#define WC_TOP_TOOLBAR__WIDX_WATER 9
-#define WC_TOP_TOOLBAR__WIDX_SCENERY 10
-#define WC_TOP_TOOLBAR__WIDX_PATH 11
+#define WC_TOP_TOOLBAR__WIDX_LAND 9
+#define WC_TOP_TOOLBAR__WIDX_WATER 10
+#define WC_TOP_TOOLBAR__WIDX_SCENERY 11
+#define WC_TOP_TOOLBAR__WIDX_PATH 12
 #define WC_TOP_TOOLBAR__WIDX_CLEAR_SCENERY 17
 #define WC_RIDE_CONSTRUCTION__WIDX_CONSTRUCT 23
 #define WC_RIDE_CONSTRUCTION__WIDX_ENTRANCE 29
@@ -748,5 +748,7 @@ extern bool _deferClose;
 
 rct_window* window_get_listening();
 rct_windowclass window_get_classification(rct_window* window);
+
+bool window_toggle(rct_windowclass cls);
 
 #endif

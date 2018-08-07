@@ -839,8 +839,10 @@ enum
     SPR_G2_WALL_TEXTURE_SKYSCRAPER_B = SPR_G2_BEGIN + 122,
 
     SPR_G2_EYEDROPPER = SPR_G2_BEGIN + 123,
+    SPR_G2_ROTATE_CCW = SPR_G2_BEGIN + 124,
+    SPR_G2_ROTATE_PRESSED = SPR_G2_BEGIN + 125,
 
-    SPR_G2_CHAR_BEGIN = SPR_G2_BEGIN + 124,
+    SPR_G2_CHAR_BEGIN = SPR_G2_BEGIN + 126,
 
     SPR_G2_AE_UPPER = SPR_G2_CHAR_BEGIN,
     SPR_G2_AE_LOWER = SPR_G2_CHAR_BEGIN + 1,
@@ -913,6 +915,8 @@ enum
 
     SPR_G2_CHAR_END = SPR_G2_T_COMMA_LOWER,
     SPR_G2_GLYPH_COUNT = (SPR_G2_CHAR_END - SPR_G2_CHAR_BEGIN) + 1,
+
+
 
     // 0x60000, chosen because it's a round hex number
     // of the last possible range of image ID values that is large enough to fit all csg1 sprites.

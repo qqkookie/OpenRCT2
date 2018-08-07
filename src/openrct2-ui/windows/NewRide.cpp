@@ -473,6 +473,9 @@ static void window_new_ride_scroll_to_focused_ride(rct_window* w)
  */
 rct_window* window_new_ride_open()
 {
+    if (window_toggle(WC_CONSTRUCT_RIDE))
+        return nullptr;
+
     rct_window* w;
 
     w = window_bring_to_front_by_class(WC_CONSTRUCT_RIDE);

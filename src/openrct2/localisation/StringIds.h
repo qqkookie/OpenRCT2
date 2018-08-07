@@ -261,7 +261,7 @@ enum
     STR_WINDOW_TITLE_TIP = 829,
     STR_ZOOM_IN_TIP = 830,
     STR_ZOOM_OUT_TIP = 831,
-    STR_ROTATE_TIP = 832,
+    STR_ROTATE_CW_TIP = 832,
     STR_PAUSE_GAME_TIP = 833,
     STR_DISC_AND_GAME_OPTIONS_TIP = 834,
     STR_ERR_GAME_INITIALISATION_FAILED = 835,
@@ -3934,6 +3934,8 @@ enum
     STR_ELAPSED_DAYS = 6264,
     STR_COMPLETED_BY_WITH_COMPANY_VALUE_ALT = 6265,
     STR_COMPLETED_DAYS = 6266,
+
+    STR_ROTATE_CCW_TIP = 6267,
 
     // Have to include resource strings (from scenarios and objects) for the time being now that language is partially working
     STR_COUNT = 32768

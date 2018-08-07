@@ -230,6 +230,9 @@ static void window_research_draw_tab_images(rct_drawpixelinfo* dpi, rct_window* 
 
 rct_window* window_research_open()
 {
+    if (window_toggle(WC_RESEARCH))
+        return nullptr;
+
     rct_window* w;
 
     w = window_bring_to_front_by_class(WC_RESEARCH);

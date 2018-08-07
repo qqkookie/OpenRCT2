@@ -594,6 +594,9 @@ static void window_park_prepare_window_title_text()
  */
 rct_window* window_park_entrance_open()
 {
+    if (window_toggle(WC_PARK_INFORMATION))
+        return nullptr;
+
     rct_window* window;
 
     window = window_bring_to_front_by_class(WC_PARK_INFORMATION);

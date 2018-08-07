@@ -195,6 +195,9 @@ static void window_ride_list_open_all(rct_window* w);
  */
 rct_window* window_ride_list_open()
 {
+    if (window_toggle(WC_RIDE_LIST))
+        return nullptr;
+
     rct_window* window;
 
     // Check if window is already open

@@ -522,6 +522,9 @@ static void window_finances_draw_tab_images(rct_drawpixelinfo* dpi, rct_window* 
  */
 rct_window* window_finances_open()
 {
+    if (window_toggle(WC_FINANCES))
+        return nullptr;
+
     rct_window* w;
 
     w = window_bring_to_front_by_class(WC_FINANCES);

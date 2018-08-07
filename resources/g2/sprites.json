@@ -441,6 +441,12 @@
         "y_offset": 5
     },
     {
+        "path": "icons/rotate_ccw.png"
+    },
+    {
+        "path": "icons/rotate_pressed.png"
+    },
+    {
         "path": "font/ae-uc-small.png",
         "y_offset": 0,
         "palette": "keep",

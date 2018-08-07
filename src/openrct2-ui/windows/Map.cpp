@@ -204,6 +204,9 @@ static CoordsXY map_window_screen_to_map(int32_t screenX, int32_t screenY);
  */
 rct_window* window_map_open()
 {
+    if (window_toggle(WC_MAP))
+        return nullptr;
+
     rct_window* w;
 
     // Check if window is already open

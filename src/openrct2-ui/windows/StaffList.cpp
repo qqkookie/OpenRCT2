@@ -151,6 +151,9 @@ static constexpr const staff_naming_convention StaffNamingConvention[] = {
  **/
 rct_window* window_staff_list_open()
 {
+    if (window_toggle(WC_STAFF_LIST))
+        return nullptr;
+
     rct_window* window;
 
     // Check if window is already open

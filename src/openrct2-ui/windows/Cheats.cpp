@@ -604,6 +604,9 @@ static void window_cheats_draw_tab_images(rct_drawpixelinfo* dpi, rct_window* w)
 
 rct_window* window_cheats_open()
 {
+    if (window_toggle(WC_CHEATS))
+        return nullptr;
+
     rct_window* window;
 
     // Check if window is already open
