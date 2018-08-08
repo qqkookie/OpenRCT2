@@ -916,8 +916,6 @@ enum
     SPR_G2_CHAR_END = SPR_G2_T_COMMA_LOWER,
     SPR_G2_GLYPH_COUNT = (SPR_G2_CHAR_END - SPR_G2_CHAR_BEGIN) + 1,
 
-
-
     // 0x60000, chosen because it's a round hex number
     // of the last possible range of image ID values that is large enough to fit all csg1 sprites.
     SPR_CSG_BEGIN = 393216,

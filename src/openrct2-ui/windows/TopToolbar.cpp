@@ -163,7 +163,6 @@ static constexpr const int32_t left_aligned_widgets_order[] = {
     WIDX_OPTIONS,
     WIDX_PAUSE,
     WIDX_FASTFORWARD,
-
     WIDX_MUTE,
     WIDX_NETWORK,
     WIDX_CHEATS,
@@ -204,7 +203,7 @@ static constexpr const int32_t right_aligned_widgets_order[] = {
 
 static rct_widget window_top_toolbar_widgets[] = {
     { WWT_TRNBTN,   0,  0,              29,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_FILE,              STR_DISC_AND_GAME_OPTIONS_TIP },    // File menu
-    { WWT_TRNBTN,   0,  30,             59,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TAB_TOOLBAR,               STR_DISC_AND_GAME_OPTIONS_TIP },     // Options dialog
+    { WWT_TRNBTN,   0,  30,             59,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TAB_TOOLBAR,               STR_DISC_AND_GAME_OPTIONS_TIP },    // Options dialog
     { WWT_TRNBTN,   0,  60,             89,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_PAUSE,             STR_PAUSE_GAME_TIP },               // Pause
     { WWT_TRNBTN,   0,  0x00DC + 30,    0x00F9 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_TOOLBAR_MUTE,           STR_TOOLBAR_MUTE_TIP },             // Mute
     { WWT_TRNBTN,   1,  0x0046 + 30,    0x0063 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ZOOM_OUT,          STR_ZOOM_OUT_TIP },                 // Zoom out
