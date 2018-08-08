@@ -209,7 +209,7 @@ namespace GameActions
             // Allow autosave to commence
             if (gLastAutoSaveUpdate == AUTOSAVE_PAUSE)
             {
-                gLastAutoSaveUpdate = platform_get_ticks();
+                gLastAutoSaveUpdate = platform_get_ticks()/TICKSPERSEC;
             }
         }
 

@@ -89,9 +89,9 @@ validate_global_widx(WC_TOP_TOOLBAR, WIDX_PATH);
 
 enum FILE_MENU_DDIDX {
     DDIDX_NEW_GAME = 0,
-    DDIDX_LOAD_GAME = 1,
-    DDIDX_SAVE_GAME = 2,
-    DDIDX_SAVE_GAME_AS = 3,
+    DDIDX_SAVE_GAME = 1,
+    DDIDX_SAVE_GAME_AS = 2,
+    DDIDX_LOAD_GAME = 3,
     // separator
     DDIDX_ABOUT = 5,
     DDIDX_OPTIONS = 6,
@@ -202,8 +202,8 @@ static constexpr const int32_t right_aligned_widgets_order[] = {
 #pragma endregion
 
 static rct_widget window_top_toolbar_widgets[] = {
-    { WWT_TRNBTN,   0,  0,              29,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_FILE,              STR_DISC_AND_GAME_OPTIONS_TIP },    // File menu
-    { WWT_TRNBTN,   0,  30,             59,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TAB_TOOLBAR,               STR_DISC_AND_GAME_OPTIONS_TIP },    // Options dialog
+    { WWT_TRNBTN,   0,  0,              29,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_FILE,              STR_FILE_MENU_TIP },    // File menu
+    { WWT_TRNBTN,   0,  30,             59,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TAB_TOOLBAR,               STR_OPTIONS_TIP },    // Options dialog
     { WWT_TRNBTN,   0,  60,             89,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_PAUSE,             STR_PAUSE_GAME_TIP },               // Pause
     { WWT_TRNBTN,   0,  0x00DC + 30,    0x00F9 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_TOOLBAR_MUTE,           STR_TOOLBAR_MUTE_TIP },             // Mute
     { WWT_TRNBTN,   1,  0x0046 + 30,    0x0063 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ZOOM_OUT,          STR_ZOOM_OUT_TIP },                 // Zoom out
@@ -433,8 +433,8 @@ static void window_top_toolbar_mousedown(rct_window* w, rct_widgetindex widgetIn
             }
             else if (gScreenFlags & SCREEN_FLAGS_SCENARIO_EDITOR)
             {
-                gDropdownItemsFormat[0] = STR_LOAD_LANDSCAPE;
-                gDropdownItemsFormat[1] = STR_SAVE_LANDSCAPE;
+                gDropdownItemsFormat[0] = STR_SAVE_LANDSCAPE;
+                gDropdownItemsFormat[1] = STR_LOAD_LANDSCAPE;
                 gDropdownItemsFormat[2] = STR_EMPTY;
                 gDropdownItemsFormat[3] = STR_ABOUT;
                 gDropdownItemsFormat[4] = STR_OPTIONS;
@@ -448,9 +448,9 @@ static void window_top_toolbar_mousedown(rct_window* w, rct_widgetindex widgetIn
             else
             {
                 gDropdownItemsFormat[0] = STR_NEW_GAME;
-                gDropdownItemsFormat[1] = STR_LOAD_GAME;
-                gDropdownItemsFormat[2] = STR_SAVE_GAME;
-                gDropdownItemsFormat[3] = STR_SAVE_GAME_AS;
+                gDropdownItemsFormat[1] = STR_SAVE_GAME;
+                gDropdownItemsFormat[2] = STR_SAVE_GAME_AS;
+                gDropdownItemsFormat[3] = STR_LOAD_GAME;
                 gDropdownItemsFormat[4] = STR_EMPTY;
                 gDropdownItemsFormat[5] = STR_ABOUT;
                 gDropdownItemsFormat[6] = STR_OPTIONS;
@@ -475,6 +475,7 @@ static void window_top_toolbar_mousedown(rct_window* w, rct_widgetindex widgetIn
             window_dropdown_show_text(
                 w->x + widget->left, w->y + widget->top, widget->bottom - widget->top + 1, w->colours[0] | 0x80,
                 DROPDOWN_FLAG_STAY_OPEN, numItems);
+            gDropdownDefaultIndex = DDIDX_SAVE_GAME;
 
 #ifndef DISABLE_TWITCH
             if (_menuDropdownIncludesTwitch && gTwitchEnable)

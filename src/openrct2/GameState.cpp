@@ -278,7 +278,7 @@ void GameState::UpdateLogic()
     // Start autosave timer after update
     if (gLastAutoSaveUpdate == AUTOSAVE_PAUSE)
     {
-        gLastAutoSaveUpdate = Platform::GetTicks();
+        gLastAutoSaveUpdate = Platform::GetTicks()/TICKSPERSEC;
     }
 
     // Separated out processing commands in network_update which could call scenario_rand where gInUpdateCode is false.

@@ -835,7 +835,7 @@ STR_0830    :{SMALLFONT}{BLACK}화면 확대하기
 STR_0831    :{SMALLFONT}{BLACK}화면 축소하기
 STR_0832    :{SMALLFONT}{BLACK}게임 화면을 시계방향으로 90{DEGREE} 회전하기
 STR_0833    :{SMALLFONT}{BLACK}게임 일시정지
-STR_0834    :{SMALLFONT}{BLACK}디스크 및 게임 설정
+# STR_0834    :{SMALLFONT}{BLACK}디스크 및 게임 설정
 STR_0835    :게임 초기화 실패
 STR_0836    :게임을 최소화 상태에서 실행할 수 없습니다
 STR_0837    :그래픽 시스템을 초기화할 수 없습니다
@@ -2708,9 +2708,9 @@ STR_2698    :???
 STR_2699    :???
 STR_2700    :자동 저장 주기:
 STR_2701    :매 1분마다
-STR_2702    :매 5분마다
-STR_2703    :매 15분마다
-STR_2704    :매 30분마다
+# STR_2702    :매 5분마다
+# STR_2703    :매 15분마다
+# STR_2704    :매 30분마다
 STR_2705    :매 시간마다
 STR_2706    :안 함
 STR_2707    :새 창 열기
@@ -2802,7 +2802,7 @@ STR_2790    :시나리오 차트에 이름을 기록하세요
 STR_2791    :이름을 입력하세요
 STR_2792    :시나리오 차트에 이름을 기록하세요:
 STR_2793    :{SMALLFONT}(달성: {STRINGID})
-STR_2794    :{WINDOW_COLOUR_2}달성: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}회사 가치: {BLACK}{CURRENCY}
+# STR_2794    :{WINDOW_COLOUR_2}달성: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}회사 가치: {BLACK}{CURRENCY}
 STR_2795    :정렬
 STR_2796    :{SMALLFONT}{BLACK}놀이기구 목록을 정보 종류에 따라 정렬하여 표시합니다.
 STR_2797    :화면 가장자리에 커서를 가져가면 화면을 스크롤
@@ -4571,12 +4571,14 @@ STR_6261    :넓은 보도 표시
 
 STR_6301    :느린 속도
 STR_6302    :아주 느린 속도
-STR_6303    :{WINDOW_COLOUR_2}경과 날짜: {BLACK}{COMMA32} 일
-STR_6364    :{WINDOW_COLOUR_2}목표 달성! 이름: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}회사 가치: {BLACK}{CURRENCY}
-STR_6305    :{WINDOW_COLOUR_2}날짜 기록: {BLACK}{COMMA32}
-STR_6306    :{SMALLFONT}{BLACK}게임 화면을 반시계방향으로 90{DEGREE} 회전하기
-STR_6307    :열려있는 창을 토글
-STR_6308    :{SMALLFONT}{BLACK}현재 열려있는 창을 다시 열면 토글해서 닫힙니다
+STR_6303    :{WINDOW_COLOUR_2}목표 달성! 이름: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}회사 가치: {BLACK}{CURRENCY}
+STR_6304    :{WINDOW_COLOUR_2}날짜 기록: {BLACK}{COMMA32}
+STR_6305    :{WINDOW_COLOUR_2}경과 날짜: {BLACK}{COMMA32} 일
+STR_6306    :열려있는 창을 토글
+STR_6307    :{SMALLFONT}{BLACK}현재 열려있는 창을 다시 열면 토글해서 닫힙니다
+STR_6308    :매 {INT32} 분마다
+STR_6309    :{SMALLFONT}{BLACK}게임 화면을 반시계방향으로 90{DEGREE} 회전하기
+STR_6310    :{SMALLFONT}{BLACK}파일 저장 메뉴
 
 #############
 # Scenarios #

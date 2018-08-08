@@ -387,6 +387,7 @@ extern char gScenarioExpansionPacks[3256];
 extern bool gFirstTimeSaving;
 extern uint16_t gSavedAge;
 extern uint32_t gLastAutoSaveUpdate;
+#define TICKSPERSEC 1000
 
 extern char gScenarioFileName[260];
 

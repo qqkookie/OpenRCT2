@@ -175,7 +175,9 @@ enum WINDOW_OPTIONS_WIDGET_IDX {
     WIDX_SAVE_PLUGIN_DATA_CHECKBOX,
     WIDX_STAY_CONNECTED_AFTER_DESYNC,
     WIDX_AUTOSAVE,
-    WIDX_AUTOSAVE_DROPDOWN,
+    WIDX_AUTOSAVE_SPINNER,
+    WIDX_AUTOSAVE_SPINNER_UP,
+    WIDX_AUTOSAVE_SPINNER_DOWN,
     WIDX_PATH_TO_RCT1_TEXT,
     WIDX_PATH_TO_RCT1_BUTTON,
     WIDX_PATH_TO_RCT1_CLEAR,
@@ -353,8 +355,8 @@ static rct_widget window_options_advanced_widgets[] = {
     { WWT_CHECKBOX,         2,  10,     299,    84,      95,    STR_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM,  STR_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM_TIP },    // Allow loading with incorrect checksum
     { WWT_CHECKBOX,         2,  10,     299,    99,     110,    STR_SAVE_PLUGIN_DATA,                       STR_SAVE_PLUGIN_DATA_TIP },                         // Export plug-in objects with saved games
     { WWT_CHECKBOX,         2,  10,     299,    114,    125,    STR_STAY_CONNECTED_AFTER_DESYNC,            STR_STAY_CONNECTED_AFTER_DESYNC_TIP },              // Do not disconnect after the client desynchronises with the server
-    { WWT_DROPDOWN,         1,  165,    299,    130,    141,    STR_NONE,                                   STR_NONE },                                         // Autosave dropdown
-    { WWT_BUTTON,           1,  288,    298,    131,    140,    STR_DROPDOWN_GLYPH,                         STR_AUTOSAVE_FREQUENCY_TIP },                       // Autosave dropdown button
+    { WWT_LABEL,            1,  23,     298,    130,    159,    STR_OPTIONS_AUTOSAVE_FREQUENCY_LABEL,       STR_NONE },
+    SPINNER_WIDGETS       ( 1,  165,    289,    130,    141,    STR_NONE,                   STR_AUTOSAVE_FREQUENCY_TIP ),                       // NB: 3 widgets
     { WWT_LABEL,            1,  23,     298,    148,    159,    STR_PATH_TO_RCT1,                           STR_PATH_TO_RCT1_TIP },                             // RCT 1 path text
     { WWT_BUTTON,           1,  24,     289,    163,    176,    STR_NONE,                                   STR_STRING_TOOLTIP },                               // RCT 1 path button
     { WWT_BUTTON,           1,  289,    299,    163,    176,    STR_CLOSE_X,                                STR_PATH_TO_RCT1_CLEAR_TIP },                       // RCT 1 path clear button
@@ -388,9 +390,7 @@ static rct_widget *window_options_page_widgets[] = {
 
 static constexpr const rct_string_id window_options_autosave_names[6] = {
     STR_SAVE_EVERY_MINUTE,
-    STR_SAVE_EVERY_5MINUTES,
-    STR_SAVE_EVERY_15MINUTES,
-    STR_SAVE_EVERY_30MINUTES,
+    STR_SAVE_EVERY_N_MINUTES,
     STR_SAVE_EVERY_HOUR,
     STR_SAVE_NEVER,
 };
@@ -593,7 +593,9 @@ static uint64_t window_options_page_enabled_widgets[] = {
     (1 << WIDX_SAVE_PLUGIN_DATA_CHECKBOX) |
     (1 << WIDX_STAY_CONNECTED_AFTER_DESYNC) |
     (1 << WIDX_AUTOSAVE) |
-    (1 << WIDX_AUTOSAVE_DROPDOWN) |
+    (1 << WIDX_AUTOSAVE_SPINNER) |
+    (1 << WIDX_AUTOSAVE_SPINNER_UP) |
+    (1 << WIDX_AUTOSAVE_SPINNER_DOWN) |
     (1 << WIDX_PATH_TO_RCT1_TEXT) |
     (1 << WIDX_PATH_TO_RCT1_BUTTON) |
     (1 << WIDX_PATH_TO_RCT1_CLEAR),
@@ -1312,15 +1314,17 @@ static void window_options_mousedown(rct_window* w, rct_widgetindex widgetIndex,
         case WINDOW_OPTIONS_PAGE_ADVANCED:
             switch (widgetIndex)
             {
-                case WIDX_AUTOSAVE_DROPDOWN:
-                    for (size_t i = AUTOSAVE_EVERY_MINUTE; i <= AUTOSAVE_NEVER; i++)
-                    {
-                        gDropdownItemsFormat[i] = STR_DROPDOWN_MENU_LABEL;
-                        gDropdownItemsArgs[i] = window_options_autosave_names[i];
-                    }
-
-                    window_options_show_dropdown(w, widget, AUTOSAVE_NEVER + 1);
-                    dropdown_set_checked(gConfigGeneral.autosave_frequency, true);
+                case WIDX_AUTOSAVE_SPINNER_UP:
+                case WIDX_AUTOSAVE_SPINNER_DOWN:
+                    int32_t mins = gConfigGeneral.autosave_frequency;
+                    gConfigGeneral.autosave_frequency +=
+                        ((widgetIndex != WIDX_AUTOSAVE_SPINNER_DOWN)
+                            ? ((mins >= 30) ? 10 : (mins >= 15 ? 5 : 1))
+                            : ((mins >= 40) ? -10 : (mins >= 20 ? -5 : -1)));
+                    if (gConfigGeneral.autosave_frequency > 60
+                        || gConfigGeneral.autosave_frequency < 0)
+                        gConfigGeneral.autosave_frequency = 0;
+                    config_save_default();
                     break;
             }
             break;
@@ -1529,19 +1533,6 @@ static void window_options_dropdown(rct_window* w, rct_widgetindex widgetIndex, 
             }
             break;
 
-        case WINDOW_OPTIONS_PAGE_CONTROLS_AND_INTERFACE:
-            switch (widgetIndex)
-            {
-                case WIDX_THEMES_DROPDOWN:
-                    if (dropdownIndex != -1)
-                    {
-                        theme_manager_set_active_available_theme(dropdownIndex);
-                    }
-                    config_save_default();
-                    break;
-            }
-            break;
-
         case WINDOW_OPTIONS_PAGE_MISC:
             switch (widgetIndex)
             {
@@ -1568,20 +1559,6 @@ static void window_options_dropdown(rct_window* w, rct_widgetindex widgetIndex, 
                         config_save_default();
                         window_invalidate(w);
                         window_close_by_class(WC_SCENARIO_SELECT);
-                    }
-                    break;
-            }
-            break;
-
-        case WINDOW_OPTIONS_PAGE_ADVANCED:
-            switch (widgetIndex)
-            {
-                case WIDX_AUTOSAVE_DROPDOWN:
-                    if (dropdownIndex != gConfigGeneral.autosave_frequency)
-                    {
-                        gConfigGeneral.autosave_frequency = (uint8_t)dropdownIndex;
-                        config_save_default();
-                        window_invalidate(w);
                     }
                     break;
             }
@@ -2032,13 +2009,19 @@ static void window_options_paint(rct_window* w, rct_drawpixelinfo* dpi)
 
         case WINDOW_OPTIONS_PAGE_ADVANCED:
         {
-            gfx_draw_string_left(
-                dpi, STR_OPTIONS_AUTOSAVE_FREQUENCY_LABEL, w, w->colours[1], w->x + 24,
-                w->y + window_options_advanced_widgets[WIDX_AUTOSAVE].top + 1);
-            gfx_draw_string_left(
-                dpi, window_options_autosave_names[gConfigGeneral.autosave_frequency], nullptr, w->colours[1],
-                w->x + window_options_advanced_widgets[WIDX_AUTOSAVE].left + 1,
-                w->y + window_options_advanced_widgets[WIDX_AUTOSAVE].top);
+            int32_t mins = gConfigGeneral.autosave_frequency;
+            rct_string_id every;
+            if (mins > 1 && mins < 60)
+                every = STR_SAVE_EVERY_N_MINUTES;
+            else if (mins == 1)
+                every = STR_SAVE_EVERY_MINUTE;
+            else if (mins == 60)
+                every = STR_SAVE_EVERY_HOUR;
+            else
+                every = STR_SAVE_NEVER;
+            gfx_draw_string_left( dpi, every, &mins,
+                w->colours[1], w->x + w->widgets[WIDX_AUTOSAVE_SPINNER].left + 1,
+                w->y + w->widgets[WIDX_AUTOSAVE_SPINNER].top + 1);
 
 #ifdef __APPLE__
             set_format_arg(0, uintptr_t, (uintptr_t)macos_str_decomp_to_precomp(gConfigGeneral.rct1_path));

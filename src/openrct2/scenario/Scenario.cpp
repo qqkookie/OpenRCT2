@@ -275,30 +275,11 @@ void scenario_autosave_check()
     if (gLastAutoSaveUpdate == AUTOSAVE_PAUSE)
         return;
 
-    // Milliseconds since last save
-    uint32_t timeSinceSave = platform_get_ticks() - gLastAutoSaveUpdate;
+    // Seconds since last save
+    uint32_t timeSinceSave = platform_get_ticks()/TICKSPERSEC - gLastAutoSaveUpdate;
 
-    bool shouldSave = false;
-    switch (gConfigGeneral.autosave_frequency)
-    {
-        case AUTOSAVE_EVERY_MINUTE:
-            shouldSave = timeSinceSave >= 1 * 60 * 1000;
-            break;
-        case AUTOSAVE_EVERY_5MINUTES:
-            shouldSave = timeSinceSave >= 5 * 60 * 1000;
-            break;
-        case AUTOSAVE_EVERY_15MINUTES:
-            shouldSave = timeSinceSave >= 15 * 60 * 1000;
-            break;
-        case AUTOSAVE_EVERY_30MINUTES:
-            shouldSave = timeSinceSave >= 30 * 60 * 1000;
-            break;
-        case AUTOSAVE_EVERY_HOUR:
-            shouldSave = timeSinceSave >= 60 * 60 * 1000;
-            break;
-    }
-
-    if (shouldSave)
+    if (gConfigGeneral.autosave_frequency > 0
+        && (int32_t)timeSinceSave > (gConfigGeneral.autosave_frequency * 60))
     {
         gLastAutoSaveUpdate = AUTOSAVE_PAUSE;
         game_autosave();

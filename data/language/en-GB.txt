@@ -835,7 +835,7 @@ STR_0830    :{SMALLFONT}{BLACK}Zoom view in
 STR_0831    :{SMALLFONT}{BLACK}Zoom view out
 STR_0832    :{SMALLFONT}{BLACK}Rotate view 90{DEGREE} clockwise
 STR_0833    :{SMALLFONT}{BLACK}Pause game
-STR_0834    :{SMALLFONT}{BLACK}Disk and game options
+# STR_0834    :{SMALLFONT}{BLACK}Disk and game options
 STR_0835    :Game initialisation failed
 STR_0836    :Unable to start game in a minimised state
 STR_0837    :Unable to initialise graphics system
@@ -2707,9 +2707,9 @@ STR_2698    :???
 STR_2699    :???
 STR_2700    :Autosave frequency:
 STR_2701    :Every minute
-STR_2702    :Every 5 minutes
-STR_2703    :Every 15 minutes
-STR_2704    :Every 30 minutes
+# STR_2702    :Every 5 minutes
+# STR_2703    :Every 15 minutes
+# STR_2704    :Every 30 minutes
 STR_2705    :Every hour
 STR_2706    :Never
 STR_2707    :Use system dialog window
@@ -2801,7 +2801,7 @@ STR_2790    :Enter name into scenario chart
 STR_2791    :Enter name
 STR_2792    :Please enter your name for the scenario chart:
 STR_2793    :{SMALLFONT}(Completed by {STRINGID})
-STR_2794    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2} with a company value of: {BLACK}{CURRENCY}
+# STR_2794    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2} with a company value of: {BLACK}{CURRENCY}
 STR_2795    :Sort
 STR_2796    :{SMALLFONT}{BLACK}Sort the ride list into order using the information type displayed
 STR_2797    :Scroll view when pointer at screen edge
@@ -4571,12 +4571,14 @@ STR_6261    :Show wide paths
 
 STR_6301    :Slow Speed
 STR_6302    :Slower Speed
-STR_6303    :{WINDOW_COLOUR_2}Elapsed: {BLACK}{COMMA32} days
-STR_6304    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}
-STR_6305    :{WINDOW_COLOUR_2}Record days: {BLACK}{COMMA32}
-STR_6306    :{SMALLFONT}{BLACK}Rotate view 90{DEGREE} counterclockwise
-STR_6307    :Toggle sticking windows.
-STR_6308    :{SMALLFONT}{BLACK}Opening already open window again will toggle it, not stay open
+STR_6303    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}
+STR_6304    :{WINDOW_COLOUR_2}Record days: {BLACK}{COMMA32}
+STR_6305    :{WINDOW_COLOUR_2}Elapsed: {BLACK}{COMMA32} days
+STR_6306    :Toggle sticking windows.
+STR_6307    :{SMALLFONT}{BLACK}Opening already open window again will toggle it, not stay open
+STR_6308    :Every {INT32} minutes
+STR_6309    :{SMALLFONT}{BLACK}Rotate view 90{DEGREE} counterclockwise
+STR_6310    :{SMALLFONT}{BLACK}File save menu
 
 #############
 # Scenarios #

@@ -521,7 +521,7 @@ int32_t game_do_command_p(
 
             // Start autosave timer after game command
             if (gLastAutoSaveUpdate == AUTOSAVE_PAUSE)
-                gLastAutoSaveUpdate = platform_get_ticks();
+                gLastAutoSaveUpdate = platform_get_ticks()/TICKSPERSEC;
 
             return cost;
         }

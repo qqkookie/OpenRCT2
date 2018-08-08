@@ -135,7 +135,7 @@ namespace Config
         {
             auto model = &gConfigGeneral;
             model->always_show_gridlines = reader->GetBoolean("always_show_gridlines", false);
-            model->autosave_frequency = reader->GetInt32("autosave", AUTOSAVE_EVERY_5MINUTES);
+            model->autosave_frequency = reader->GetInt32("autosave", 10); // 10 min's
             model->confirmation_prompt = reader->GetBoolean("confirmation_prompt", false);
             model->currency_format = reader->GetEnum<int32_t>("currency_format", platform_get_locale_currency(), Enum_Currency);
             model->custom_currency_rate = reader->GetInt32("custom_currency_rate", 10);
