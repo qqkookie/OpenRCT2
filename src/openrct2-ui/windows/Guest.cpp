@@ -507,11 +507,8 @@ rct_window* window_guest_open(rct_peep* peep)
 
         window->viewport_focus_coordinates.y = -1;
     }
-    else
-    {
-        window_close(window);
+    else if (window_toggle(window) == nullptr)
         return nullptr;
-    }
 
     window->page = 0;
     window_invalidate(window);

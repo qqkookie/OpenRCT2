@@ -207,6 +207,8 @@ rct_window* window_loadsave_open(int32_t type, const char* defaultName)
         w->max_width = WW * 2;
         w->max_height = WH * 2;
     }
+    else if (window_toggle(w) == nullptr)
+        return nullptr;
 
     w->no_list_items = 0;
     w->selected_list_item = -1;

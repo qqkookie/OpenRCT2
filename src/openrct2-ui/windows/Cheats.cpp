@@ -604,15 +604,12 @@ static void window_cheats_draw_tab_images(rct_drawpixelinfo* dpi, rct_window* w)
 
 rct_window* window_cheats_open()
 {
-    if (window_toggle(WC_CHEATS))
-        return nullptr;
-
     rct_window* window;
 
     // Check if window is already open
     window = window_bring_to_front_by_class(WC_CHEATS);
     if (window != nullptr)
-        return window;
+        return window_toggle(window);
 
     window = window_create(32, 32, WW, WH, &window_cheats_money_events, WC_CHEATS, 0);
     window->widgets = window_cheats_money_widgets;

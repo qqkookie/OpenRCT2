@@ -1553,11 +1553,8 @@ rct_window* window_ride_main_open(int32_t rideIndex)
         w = window_ride_open(rideIndex);
         w->ride.var_482 = -1;
     }
-    else
-    {
-        window_close(w);
+    else if (window_toggle(w) == nullptr)
         return nullptr;
-    }
 
     if (input_test_flag(INPUT_FLAG_TOOL_ACTIVE))
     {
@@ -1598,11 +1595,8 @@ static rct_window* window_ride_open_station(int32_t rideIndex, int32_t stationIn
         w = window_ride_open(rideIndex);
         w->ride.var_482 = -1;
     }
-    else
-    {
-        window_close(w);
+    else if (window_toggle(w) == nullptr)
         return nullptr;
-    }
 
     if (input_test_flag(INPUT_FLAG_TOOL_ACTIVE) && gCurrentToolWidget.window_classification == w->classification
         && gCurrentToolWidget.window_number == w->number)

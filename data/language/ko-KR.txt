@@ -4568,12 +4568,15 @@ STR_6258    :투명하게
 STR_6259    :끄기
 STR_6260    :차단된 칸 표시
 STR_6261    :넓은 보도 표시
-STR_6262    :느린 속도
-STR_6263    :아주 느린 속도
-STR_6264    :{WINDOW_COLOUR_2}지난 날짜: {BLACK}{COMMA32} 일
-STR_6265    :{WINDOW_COLOUR_2}목표달성자: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}회사 가치: {BLACK}{CURRENCY}
-STR_6266    :{WINDOW_COLOUR_2}날짜 기록: {BLACK}{COMMA32}
-STR_6267    :{SMALLFONT}{BLACK}게임 화면을 반시계방향으로 90{DEGREE} 회전하기
+
+STR_6301    :느린 속도
+STR_6302    :아주 느린 속도
+STR_6303    :{WINDOW_COLOUR_2}경과 날짜: {BLACK}{COMMA32} 일
+STR_6364    :{WINDOW_COLOUR_2}목표 달성! 이름: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}회사 가치: {BLACK}{CURRENCY}
+STR_6305    :{WINDOW_COLOUR_2}날짜 기록: {BLACK}{COMMA32}
+STR_6306    :{SMALLFONT}{BLACK}게임 화면을 반시계방향으로 90{DEGREE} 회전하기
+STR_6307    :열려있는 창을 토글
+STR_6308    :{SMALLFONT}{BLACK}현재 열려있는 창을 다시 열면 토글해서 닫힙니다
 
 #############
 # Scenarios #

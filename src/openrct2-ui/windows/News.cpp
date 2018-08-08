@@ -83,9 +83,6 @@ static rct_window_event_list window_news_events = {
  */
 rct_window* window_news_open()
 {
-    if (window_toggle(WC_RECENT_NEWS))
-        return nullptr;
-
     rct_window* window;
 
     // Check if window is already open
@@ -98,6 +95,8 @@ rct_window* window_news_open()
         window_init_scroll_widgets(window);
         window->news.var_480 = -1;
     }
+    else if (window_toggle(window) == nullptr)
+        return nullptr;
 
     // sub_66E4BA:
     rct_widget* widget;

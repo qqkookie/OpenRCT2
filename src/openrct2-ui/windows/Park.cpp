@@ -594,9 +594,6 @@ static void window_park_prepare_window_title_text()
  */
 rct_window* window_park_entrance_open()
 {
-    if (window_toggle(WC_PARK_INFORMATION))
-        return nullptr;
-
     rct_window* window;
 
     window = window_bring_to_front_by_class(WC_PARK_INFORMATION);
@@ -606,6 +603,8 @@ rct_window* window_park_entrance_open()
         window->viewport_focus_coordinates.y = -1;
         window->viewport_focus_coordinates.x = -1;
     }
+    else if (window_toggle(window) == nullptr)
+        return nullptr;
 
     window->page = WINDOW_PARK_PAGE_ENTRANCE;
     window_invalidate(window);

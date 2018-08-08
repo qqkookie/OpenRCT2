@@ -23,8 +23,8 @@
 
 // clang-format off
 enum {
+    PAGE_SUMMARISED,
     PAGE_INDIVIDUAL,
-    PAGE_SUMMARISED
 };
 
 enum WINDOW_GUEST_LIST_WIDGET_IDX {
@@ -45,8 +45,8 @@ enum WINDOW_GUEST_LIST_WIDGET_IDX {
 };
 
 enum {
-    VIEW_ACTIONS,
     VIEW_THOUGHTS,
+    VIEW_ACTIONS,
     VIEW_COUNT
 };
 
@@ -65,8 +65,8 @@ static constexpr const rct_string_id filterNames[] = {
 };
 
 static constexpr const rct_string_id viewNames[VIEW_COUNT] = {
-    STR_ACTIONS,
     STR_THOUGHTS,
+    STR_ACTIONS,
 };
 
 static rct_widget window_guest_list_widgets[] = {
@@ -179,15 +179,12 @@ void window_guest_list_init_vars()
  */
 rct_window* window_guest_list_open()
 {
-    if (window_toggle(WC_GUEST_LIST))
-        return nullptr;
-
     rct_window* window;
 
     // Check if window is already open
     window = window_bring_to_front_by_class(WC_GUEST_LIST);
     if (window != nullptr)
-        return window;
+        return window_toggle(window);
 
     window = window_create_auto_pos(350, 330, &window_guest_list_events, WC_GUEST_LIST, WF_10 | WF_RESIZABLE);
     window->widgets = window_guest_list_widgets;
@@ -198,7 +195,7 @@ rct_window* window_guest_list_open()
     window_init_scroll_widgets(window);
     _window_guest_list_highlighted_index = -1;
     window->list_information_type = 0;
-    _window_guest_list_selected_tab = PAGE_INDIVIDUAL;
+    _window_guest_list_selected_tab = PAGE_SUMMARISED;
     _window_guest_list_selected_filter = -1;
     _window_guest_list_selected_page = 0;
     _window_guest_list_num_pages = 1;
@@ -671,19 +668,20 @@ static void window_guest_list_paint(rct_window* w, rct_drawpixelinfo* dpi)
 
     // Widgets
     window_draw_widgets(w, dpi);
+
     // Tab 1 image
-    i = (_window_guest_list_selected_tab == 0 ? w->list_information_type & 0x0FFFFFFFC : 0);
+    i = (_window_guest_list_selected_tab == PAGE_SUMMARISED ? w->list_information_type / 4 : 0);
+    gfx_draw_sprite(
+        dpi, SPR_TAB_GUESTS_0 + i, window_guest_list_widgets[WIDX_TAB_1].left + w->x,
+        window_guest_list_widgets[WIDX_TAB_1].top + w->y, 0);
+
+    // Tab 2 image
+    i = (_window_guest_list_selected_tab == PAGE_INDIVIDUAL ? w->list_information_type & 0x0FFFFFFFC : 0);
     i += g_peep_animation_entries[PEEP_SPRITE_TYPE_NORMAL].sprite_animation->base_image + 1;
     i |= 0xA1600000;
     gfx_draw_sprite(
-        dpi, i, (window_guest_list_widgets[WIDX_TAB_1].left + window_guest_list_widgets[WIDX_TAB_1].right) / 2 + w->x,
-        window_guest_list_widgets[WIDX_TAB_1].bottom - 6 + w->y, 0);
-
-    // Tab 2 image
-    i = (_window_guest_list_selected_tab == 1 ? w->list_information_type / 4 : 0);
-    gfx_draw_sprite(
-        dpi, SPR_TAB_GUESTS_0 + i, window_guest_list_widgets[WIDX_TAB_2].left + w->x,
-        window_guest_list_widgets[WIDX_TAB_2].top + w->y, 0);
+        dpi, i, (window_guest_list_widgets[WIDX_TAB_2].left + window_guest_list_widgets[WIDX_TAB_2].right) / 2 + w->x,
+        window_guest_list_widgets[WIDX_TAB_2].bottom - 6 + w->y, 0);
 
     // Filter description
     x = w->x + 6;

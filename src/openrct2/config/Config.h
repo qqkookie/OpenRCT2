@@ -61,6 +61,7 @@ struct GeneralConfiguration
     bool trap_cursor;
     bool invert_viewport_drag;
     bool zoom_to_cursor;
+    bool toggle_window;
 
     // Miscellaneous
     bool play_intro;

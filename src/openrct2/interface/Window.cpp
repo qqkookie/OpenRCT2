@@ -2274,13 +2274,11 @@ void widget_scroll_update_thumbs(rct_window* w, rct_widgetindex widget_index)
     }
 }
 
-bool window_toggle(rct_windowclass cls)
+rct_window* window_toggle(rct_window* window)
 {
-    rct_window* window = window_find_by_class(cls);
-    if (window != nullptr)
-    {
-        window_close(window);
-        return true;
-    }
-    return false;
+    assert(window != nullptr);
+    if (!gConfigGeneral.toggle_window)
+        return window;
+    window_close(window);
+    return nullptr;
 }

@@ -230,9 +230,6 @@ static void window_research_draw_tab_images(rct_drawpixelinfo* dpi, rct_window* 
 
 rct_window* window_research_open()
 {
-    if (window_toggle(WC_RESEARCH))
-        return nullptr;
-
     rct_window* w;
 
     w = window_bring_to_front_by_class(WC_RESEARCH);
@@ -247,6 +244,8 @@ rct_window* window_research_open()
         w->disabled_widgets = 0;
         research_update_uncompleted_types();
     }
+    else if (window_toggle(w) == nullptr)
+        return nullptr;
 
     w->page = 0;
     window_invalidate(w);

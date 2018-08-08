@@ -473,14 +473,11 @@ static void window_new_ride_scroll_to_focused_ride(rct_window* w)
  */
 rct_window* window_new_ride_open()
 {
-    if (window_toggle(WC_CONSTRUCT_RIDE))
-        return nullptr;
-
     rct_window* w;
 
     w = window_bring_to_front_by_class(WC_CONSTRUCT_RIDE);
     if (w != nullptr)
-        return w;
+        return window_toggle(w);
 
     // Not sure what these windows are
     window_close_by_class(WC_TRACK_DESIGN_LIST);
@@ -518,7 +515,8 @@ rct_window* window_new_ride_open_research()
     rct_window* w;
 
     w = window_new_ride_open();
-    window_new_ride_set_page(w, WINDOW_NEW_RIDE_PAGE_RESEARCH);
+    if (w != nullptr)
+        window_new_ride_set_page(w, WINDOW_NEW_RIDE_PAGE_RESEARCH);
     return w;
 }
 

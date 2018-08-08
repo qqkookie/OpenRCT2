@@ -48,14 +48,14 @@ using namespace OpenRCT2::Ui;
 
 // clang-format off
 enum {
-    WIDX_PAUSE,
     WIDX_FILE_MENU,
+    WIDX_OPTIONS,
+    WIDX_PAUSE,
     WIDX_MUTE,
     WIDX_ZOOM_OUT,
     WIDX_ZOOM_IN,
-
-    WIDX_ROTATE_CCW,
     WIDX_ROTATE,
+    WIDX_ROTATE_CCW,
     WIDX_VIEW_MENU,
     WIDX_MAP,
 
@@ -79,7 +79,6 @@ enum {
     WIDX_NETWORK,
 
     WIDX_SEPARATOR,
-
 };
 
 validate_global_widx(WC_TOP_TOOLBAR, WIDX_PAUSE);
@@ -160,9 +159,11 @@ enum {
 
 // from left to right
 static constexpr const int32_t left_aligned_widgets_order[] = {
+    WIDX_FILE_MENU,
+    WIDX_OPTIONS,
     WIDX_PAUSE,
     WIDX_FASTFORWARD,
-    WIDX_FILE_MENU,
+
     WIDX_MUTE,
     WIDX_NETWORK,
     WIDX_CHEATS,
@@ -202,13 +203,14 @@ static constexpr const int32_t right_aligned_widgets_order[] = {
 #pragma endregion
 
 static rct_widget window_top_toolbar_widgets[] = {
-    { WWT_TRNBTN,   0,  0x0000,         0x001D,         0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_PAUSE,             STR_PAUSE_GAME_TIP },               // Pause
-    { WWT_TRNBTN,   0,  0x001E + 30,    0x003B + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_FILE,              STR_DISC_AND_GAME_OPTIONS_TIP },    // File menu
+    { WWT_TRNBTN,   0,  0,              29,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_FILE,              STR_DISC_AND_GAME_OPTIONS_TIP },    // File menu
+    { WWT_TRNBTN,   0,  30,             59,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TAB_TOOLBAR,               STR_DISC_AND_GAME_OPTIONS_TIP },     // Options dialog
+    { WWT_TRNBTN,   0,  60,             89,             0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_PAUSE,             STR_PAUSE_GAME_TIP },               // Pause
     { WWT_TRNBTN,   0,  0x00DC + 30,    0x00F9 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_TOOLBAR_MUTE,           STR_TOOLBAR_MUTE_TIP },             // Mute
     { WWT_TRNBTN,   1,  0x0046 + 30,    0x0063 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ZOOM_OUT,          STR_ZOOM_OUT_TIP },                 // Zoom out
     { WWT_TRNBTN,   1,  0x0064 + 30,    0x0081 + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ZOOM_IN,           STR_ZOOM_IN_TIP },                  // Zoom in
-    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_ROTATE_CCW,            STR_ROTATE_CCW_TIP },                   // Rotate camera CCW
-    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ROTATE,            STR_ROTATE_CW_TIP },                   // Rotate camera CW
+    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_ROTATE,            STR_ROTATE_TIP },                   // Rotate camera CW
+    { WWT_TRNBTN,   1,  0x0082 + 30,    0x009F + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_G2_ROTATE_CCW,            STR_ROTATE_CCW_TIP },                // Rotate camera CCW
     { WWT_TRNBTN,   1,  0x00A0 + 30,    0x00BD + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_VIEW,              STR_VIEW_OPTIONS_TIP },             // Transparency menu
     { WWT_TRNBTN,   1,  0x00BE + 30,    0x00DB + 30,    0,      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_MAP,               STR_SHOW_MAP_TIP },                 // Map
     { WWT_TRNBTN,   2,  0x010B, 0x0128, 0,                      TOP_TOOLBAR_HEIGHT,     IMAGE_TYPE_REMAP | SPR_TOOLBAR_LAND,              STR_ADJUST_LAND_TIP },              // Land
@@ -280,7 +282,7 @@ static void top_toolbar_init_view_menu(rct_window* window, rct_widget* widget);
 static void top_toolbar_view_menu_dropdown(int16_t dropdownIndex);
 static void top_toolbar_init_fastforward_menu(rct_window* window, rct_widget* widget);
 static void top_toolbar_fastforward_menu_dropdown(int16_t dropdownIndex);
-static void top_toolbar_init_rotate_menu(rct_window* window, rct_widget* widget);
+// static void top_toolbar_init_rotate_menu(rct_window* window, rct_widget* widget);
 static void top_toolbar_rotate_menu_dropdown(int16_t dropdownIndex);
 static void top_toolbar_init_debug_menu(rct_window* window, rct_widget* widget);
 static void top_toolbar_debug_menu_dropdown(int16_t dropdownIndex);
@@ -329,6 +331,9 @@ static void window_top_toolbar_mouseup(rct_window* w, rct_widgetindex widgetInde
 
     switch (widgetIndex)
     {
+        case WIDX_OPTIONS:
+            window_options_open();
+            break;
         case WIDX_PAUSE:
             if (network_get_mode() != NETWORK_MODE_CLIENT)
             {
@@ -344,13 +349,12 @@ static void window_top_toolbar_mouseup(rct_window* w, rct_widgetindex widgetInde
                 window_zoom_in(mainWindow, false);
             break;
         case WIDX_ROTATE:
+            if ((mainWindow = window_get_main()) != nullptr)
+                window_rotate_camera(mainWindow, 1);
+            break;
         case WIDX_ROTATE_CCW:
             if ((mainWindow = window_get_main()) != nullptr)
-            {
-                window_rotate_camera(mainWindow,
-                    (widgetIndex == WIDX_ROTATE_CCW ? -1 : 1));
-                // window_invalidate(w);
-            }
+                window_rotate_camera(mainWindow, -1);
             break;
         case WIDX_CLEAR_SCENERY:
             toggle_clear_scenery_window(w, WIDX_CLEAR_SCENERY);
@@ -690,8 +694,9 @@ static void window_top_toolbar_invalidate(rct_window* w)
     rct_widget* widget;
 
     // Enable / disable buttons
-    window_top_toolbar_widgets[WIDX_PAUSE].type = WWT_TRNBTN;
     window_top_toolbar_widgets[WIDX_FILE_MENU].type = WWT_TRNBTN;
+    window_top_toolbar_widgets[WIDX_OPTIONS].type = WWT_TRNBTN;
+    window_top_toolbar_widgets[WIDX_PAUSE].type = WWT_TRNBTN;
     window_top_toolbar_widgets[WIDX_ZOOM_OUT].type = WWT_TRNBTN;
     window_top_toolbar_widgets[WIDX_ZOOM_IN].type = WWT_TRNBTN;
     window_top_toolbar_widgets[WIDX_ROTATE].type = WWT_TRNBTN;
@@ -787,7 +792,7 @@ static void window_top_toolbar_invalidate(rct_window* w)
     }
 
     enabledWidgets = 0;
-    for (int i = WIDX_PAUSE; i <= WIDX_NETWORK; i++)
+    for (int i = 0; i <= WIDX_NETWORK; i++)
         if (window_top_toolbar_widgets[i].type != WWT_EMPTY)
             enabledWidgets |= (1 << i);
     w->enabled_widgets = enabledWidgets;
@@ -876,6 +881,21 @@ static void window_top_toolbar_paint(rct_window* w, rct_drawpixelinfo* dpi)
 
     window_draw_widgets(w, dpi);
 
+    // Draw options button
+    if (window_top_toolbar_widgets[WIDX_OPTIONS].type != WWT_EMPTY)
+    {
+        x = w->x + window_top_toolbar_widgets[WIDX_OPTIONS].left;
+        y = w->y + window_top_toolbar_widgets[WIDX_OPTIONS].top - 1;
+        if (widget_is_pressed(w, WIDX_OPTIONS))
+        {
+            y++;
+            imgId = SPR_TAB_GEARS_1;
+        }
+        else
+            imgId = SPR_TAB_GEARS_0;
+        gfx_draw_sprite(dpi, imgId, x, y, 3);
+    }
+
     // Draw staff button image (setting masks to the staff colours)
     if (window_top_toolbar_widgets[WIDX_STAFF].type != WWT_EMPTY)
     {
@@ -939,8 +959,12 @@ static void window_top_toolbar_paint(rct_window* w, rct_drawpixelinfo* dpi)
         x = w->x + window_top_toolbar_widgets[WIDX_DEBUG].left;
         y = w->y + window_top_toolbar_widgets[WIDX_DEBUG].top - 1;
         if (widget_is_pressed(w, WIDX_DEBUG))
+        {
             y++;
-        imgId = SPR_TAB_GEARS_0;
+            imgId = SPR_TAB_WRENCH_1;
+        }
+        else
+            imgId = SPR_TAB_WRENCH_0;
         gfx_draw_sprite(dpi, imgId, x, y, 3);
     }
 

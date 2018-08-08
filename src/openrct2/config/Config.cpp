@@ -204,6 +204,7 @@ namespace Config
             model->last_save_track_directory = reader->GetCString("last_track_directory", nullptr);
             model->window_limit = reader->GetInt32("window_limit", WINDOW_LIMIT_MAX);
             model->zoom_to_cursor = reader->GetBoolean("zoom_to_cursor", true);
+            model->toggle_window = reader->GetBoolean("toggle_window", true);
             model->render_weather_effects = reader->GetBoolean("render_weather_effects", true);
             model->render_weather_gloom = reader->GetBoolean("render_weather_gloom", true);
             model->show_guest_purchases = reader->GetBoolean("show_guest_purchases", false);
@@ -275,6 +276,7 @@ namespace Config
         writer->WriteString("last_track_directory", model->last_save_track_directory);
         writer->WriteInt32("window_limit", model->window_limit);
         writer->WriteBoolean("zoom_to_cursor", model->zoom_to_cursor);
+        writer->WriteBoolean("toggle_window", model->toggle_window);
         writer->WriteBoolean("render_weather_effects", model->render_weather_effects);
         writer->WriteBoolean("render_weather_gloom", model->render_weather_gloom);
         writer->WriteBoolean("show_guest_purchases", model->show_guest_purchases);

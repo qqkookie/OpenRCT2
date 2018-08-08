@@ -151,15 +151,12 @@ static constexpr const staff_naming_convention StaffNamingConvention[] = {
  **/
 rct_window* window_staff_list_open()
 {
-    if (window_toggle(WC_STAFF_LIST))
-        return nullptr;
-
     rct_window* window;
 
     // Check if window is already open
     window = window_bring_to_front_by_class(WC_STAFF_LIST);
     if (window != nullptr)
-        return window;
+        return window_toggle(window);
 
     window = window_create_auto_pos(WW, WH, &window_staff_list_events, WC_STAFF_LIST, WF_10 | WF_RESIZABLE);
     window->widgets = window_staff_list_widgets;
