@@ -255,7 +255,7 @@ static money32 staff_hire_new_staff_member(
             newPeep->paid_on_souvenirs = 0;
 
             if (staff_type == STAFF_TYPE_HANDYMAN)
-                newPeep->staff_orders = STAFF_ORDERS_SWEEPING | STAFF_ORDERS_WATER_FLOWERS | STAFF_ORDERS_EMPTY_BINS;
+                newPeep->staff_orders = STAFF_ORDERS_SWEEPING | STAFF_ORDERS_EMPTY_BINS; // | STAFF_ORDERS_WATER_FLOWERS 
             else if (staff_type == STAFF_TYPE_MECHANIC)
                 newPeep->staff_orders = STAFF_ORDERS_INSPECT_RIDES | STAFF_ORDERS_FIX_RIDES;
             else

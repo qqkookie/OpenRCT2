@@ -35,7 +35,8 @@
 #include "Date.h"
 #include "Localisation.h"
 
-char gCommonStringFormatBuffer[256];
+// STR_TITLE_MUSIC_TIP in Asian language exceeds 310 bytes
+char gCommonStringFormatBuffer[512];
 uint8_t gCommonFormatArgs[80];
 uint8_t gMapTooltipFormatArgs[40];
 
@@ -1298,6 +1299,8 @@ void format_string(utf8* dest, size_t size, rct_string_id format, void* args)
     {
         return;
     }
+    size_t oldsize = size;
+    oldsize++;
 
     utf8* end = dest;
     size_t left = size;
