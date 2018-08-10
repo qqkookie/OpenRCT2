@@ -86,6 +86,7 @@ validate_global_widx(WC_TOP_TOOLBAR, WIDX_LAND);
 validate_global_widx(WC_TOP_TOOLBAR, WIDX_WATER);
 validate_global_widx(WC_TOP_TOOLBAR, WIDX_SCENERY);
 validate_global_widx(WC_TOP_TOOLBAR, WIDX_PATH);
+validate_global_widx(WC_TOP_TOOLBAR, WIDX_CLEAR_SCENERY);
 
 enum FILE_MENU_DDIDX {
     DDIDX_NEW_GAME = 0,

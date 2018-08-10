@@ -322,7 +322,7 @@ private:
 class ScenarioRepository final : public IScenarioRepository
 {
 private:
-    static constexpr char HEAD[] = "OpenRCT2";
+    static constexpr char HEAD[] = "Highscores";
     static constexpr char SCENS[] = "scen";
     static constexpr int32_t VERSION = 11;
     std::string _last_winner;
@@ -612,8 +612,8 @@ private:
                     break;
                 scenario_highscore_entry* highscore = InsertHighscore();
                 highscore->timestamp = reader->GetInt32("timestamp", 0);
-                highscore->scen_file = String::Duplicate((reader->GetString("file", "error")).c_str());
-                highscore->scen_winner = String::Duplicate(reader->GetString("winner", "error").c_str());
+                highscore->scen_file = reader->GetCString("file", "error");
+                highscore->scen_winner = reader->GetCString("winner", "error");
                 highscore->company_value = (money32)(reader->GetFloat("company_value", 0.0) * 10.0 + 0.5);
                 highscore->record_days = reader->GetInt32("record_days", 0);
                 if (checksum(highscore) != reader->GetInt32("checksum", 0))

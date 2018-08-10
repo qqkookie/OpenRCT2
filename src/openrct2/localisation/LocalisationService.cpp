@@ -66,6 +66,17 @@ const char* LocalisationService::GetString(rct_string_id id) const
     return result;
 }
 
+const char* LocalisationService::GetBaseString(rct_string_id strid) const
+{
+    const char* result = nullptr;
+    if (_currentLanguage == LANGUAGE_ENGLISH_UK)
+        result = _languageCurrent->GetString(strid);
+    else if (_languageFallback)
+        result = _languageFallback->GetString(strid);
+
+    return  result ? result : "(undefined string)";
+}
+
 std::string LocalisationService::GetLanguagePath(uint32_t languageId) const
 {
     auto locale = std::string(LanguagesDescriptors[languageId].locale);

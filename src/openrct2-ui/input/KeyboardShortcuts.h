@@ -12,10 +12,11 @@
 #include <memory>
 #include <openrct2/common.h>
 
-#define SHIFT 0x100
-#define CTRL 0x200
-#define ALT 0x400
-#define CMD 0x800
+// SDL_Scancode uses 9 bits (SDL_NUM_SCANCODES == 512)
+#define SHIFT 0x1000
+#define CTRL 0x2000
+#define ALT 0x4000
+#define CMD 0x8000
 #ifdef __MACOSX__
 #    define PLATFORM_MODIFIER CMD
 #else
@@ -111,10 +112,14 @@ namespace OpenRCT2
         {
         private:
             constexpr static int32_t CURRENT_FILE_VERSION = 1;
+            constexpr static char HEAD[] = "ShortcutKeys";
+            constexpr static int32_t VERSION = 11;
+
             static const uint16_t DefaultKeys[SHORTCUT_COUNT];
 
             std::shared_ptr<IPlatformEnvironment> const _env;
             uint16_t _keys[SHORTCUT_COUNT];
+            bool LoadOld();
 
         public:
             KeyboardShortcuts(const std::shared_ptr<IPlatformEnvironment>& env);
@@ -146,6 +151,6 @@ void keyboard_shortcuts_format_string(char* buffer, size_t bufferSize, int32_t s
 
 void keyboard_shortcut_handle(int32_t key);
 void keyboard_shortcut_handle_command(int32_t shortcutIndex);
-void keyboard_shortcut_format_string(char* buffer, size_t size, uint16_t shortcutKey);
+// void keyboard_shortcut_format_string(char* buffer, size_t size, uint16_t shortcutKey);
 
 void get_keyboard_map_scroll(const uint8_t* keysState, int32_t* x, int32_t* y);

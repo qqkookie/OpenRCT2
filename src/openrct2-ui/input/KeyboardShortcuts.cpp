@@ -18,6 +18,8 @@
 #include <openrct2/core/Path.hpp>
 #include <openrct2/core/String.hpp>
 #include <openrct2/localisation/Localisation.h>
+#include "../../openrct2/config/IniReader.hpp"
+#include "../../openrct2/config/IniWriter.hpp"
 
 using namespace OpenRCT2;
 using namespace OpenRCT2::Input;
@@ -44,24 +46,31 @@ void KeyboardShortcuts::Reset()
     }
 }
 
-bool KeyboardShortcuts::Load()
+#define OLD_FILE_VERSION    1
+bool KeyboardShortcuts::LoadOld()
 {
     bool result = false;
     Reset();
     try
     {
-        std::string path = _env->GetFilePath(PATHID::CONFIG_KEYBOARD);
+        std::string path = _env->GetFilePath(PATHID::CONFIG_KEYBOARD_OLD);
         if (File::Exists(path))
         {
             auto fs = FileStream(path, FILE_MODE_OPEN);
             uint16_t version = fs.ReadValue<uint16_t>();
-            if (version == KeyboardShortcuts::CURRENT_FILE_VERSION)
+            if (version == OLD_FILE_VERSION)
             {
+                uint16_t key;
                 int32_t numShortcutsInFile = (fs.GetLength() - sizeof(uint16_t)) / sizeof(uint16_t);
                 int32_t numShortcutsToRead = std::min<int32_t>(SHORTCUT_COUNT, numShortcutsInFile);
                 for (int32_t i = 0; i < numShortcutsToRead; i++)
                 {
-                    _keys[i] = fs.ReadValue<uint16_t>();
+                    key = fs.ReadValue<uint16_t>();
+                    if (key & 0xff00)
+                        key = key;
+                    if (key != SHORTCUT_UNDEFINED)
+                        key = ((key & 0x0f00) << 4) | (key & 0xff); // move modifier bits position
+                    _keys[i] = key;
                 }
                 result = true;
             }
@@ -69,9 +78,143 @@ bool KeyboardShortcuts::Load()
     }
     catch (const std::exception& ex)
     {
+        Console::WriteLine("Error reading old shortcut keys: %s", ex.what());
+    }
+    return result;
+}
+
+static const char* shortcut_names[] =
+{
+    "SHORTCUT_CLOSE_TOP_MOST_WINDOW",
+    "SHORTCUT_CLOSE_ALL_FLOATING_WINDOWS",
+    "SHORTCUT_CANCEL_CONSTRUCTION_MODE",
+    "SHORTCUT_PAUSE_GAME",
+    "SHORTCUT_ZOOM_VIEW_OUT",
+    "SHORTCUT_ZOOM_VIEW_IN",
+    "SHORTCUT_ROTATE_VIEW_CLOCKWISE",
+    "SHORTCUT_ROTATE_VIEW_ANTICLOCKWISE",
+    "SHORTCUT_ROTATE_CONSTRUCTION_OBJECT",
+    "SHORTCUT_UNDERGROUND_VIEW_TOGGLE",
+    "SHORTCUT_REMOVE_BASE_LAND_TOGGLE",
+    "SHORTCUT_REMOVE_VERTICAL_LAND_TOGGLE",
+    "SHORTCUT_SEE_THROUGH_RIDES_TOGGLE",
+    "SHORTCUT_SEE_THROUGH_SCENERY_TOGGLE",
+    "SHORTCUT_INVISIBLE_SUPPORTS_TOGGLE",
+    "SHORTCUT_INVISIBLE_PEOPLE_TOGGLE",
+    "SHORTCUT_HEIGHT_MARKS_ON_LAND_TOGGLE",
+    "SHORTCUT_HEIGHT_MARKS_ON_RIDE_TRACKS_TOGGLE",
+    "SHORTCUT_HEIGHT_MARKS_ON_PATHS_TOGGLE",
+    "SHORTCUT_ADJUST_LAND",
+    "SHORTCUT_ADJUST_WATER",
+    "SHORTCUT_BUILD_SCENERY",
+    "SHORTCUT_BUILD_PATHS",
+    "SHORTCUT_BUILD_NEW_RIDE",
+    "SHORTCUT_SHOW_FINANCIAL_INFORMATION",
+    "SHORTCUT_SHOW_RESEARCH_INFORMATION",
+    "SHORTCUT_SHOW_RIDES_LIST",
+    "SHORTCUT_SHOW_PARK_INFORMATION",
+    "SHORTCUT_SHOW_GUEST_LIST",
+    "SHORTCUT_SHOW_STAFF_LIST",
+    "SHORTCUT_SHOW_RECENT_MESSAGES",
+    "SHORTCUT_SHOW_MAP",
+    "SHORTCUT_SCREENSHOT",
+
+    // New
+    "SHORTCUT_REDUCE_GAME_SPEED",
+    "SHORTCUT_INCREASE_GAME_SPEED",
+    "SHORTCUT_OPEN_CHEAT_WINDOW",
+    "SHORTCUT_REMOVE_TOP_BOTTOM_TOOLBAR_TOGGLE",
+    "SHORTCUT_SCROLL_MAP_UP",
+    "SHORTCUT_SCROLL_MAP_LEFT",
+    "SHORTCUT_SCROLL_MAP_DOWN",
+    "SHORTCUT_SCROLL_MAP_RIGHT",
+    "SHORTCUT_OPEN_CHAT_WINDOW",
+    "SHORTCUT_QUICK_SAVE_GAME",
+    "SHORTCUT_SHOW_OPTIONS",
+    "SHORTCUT_MUTE_SOUND",
+    "SHORTCUT_WINDOWED_MODE_TOGGLE",
+    "SHORTCUT_SHOW_MULTIPLAYER",
+    "SHORTCUT_PAINT_ORIGINAL_TOGGLE",
+    "SHORTCUT_DEBUG_PAINT_TOGGLE",
+    "SHORTCUT_SEE_THROUGH_PATHS_TOGGLE",
+    "SHORTCUT_RIDE_CONSTRUCTION_TURN_LEFT",
+    "SHORTCUT_RIDE_CONSTRUCTION_TURN_RIGHT",
+    "SHORTCUT_RIDE_CONSTRUCTION_USE_TRACK_DEFAULT",
+    "SHORTCUT_RIDE_CONSTRUCTION_SLOPE_DOWN",
+    "SHORTCUT_RIDE_CONSTRUCTION_SLOPE_UP",
+    "SHORTCUT_RIDE_CONSTRUCTION_CHAIN_LIFT_TOGGLE",
+    "SHORTCUT_RIDE_CONSTRUCTION_BANK_LEFT",
+    "SHORTCUT_RIDE_CONSTRUCTION_BANK_RIGHT",
+    "SHORTCUT_RIDE_CONSTRUCTION_PREVIOUS_TRACK",
+    "SHORTCUT_RIDE_CONSTRUCTION_NEXT_TRACK",
+    "SHORTCUT_RIDE_CONSTRUCTION_BUILD_CURRENT",
+    "SHORTCUT_RIDE_CONSTRUCTION_DEMOLISH_CURRENT",
+    "SHORTCUT_LOAD_GAME",
+    "SHORTCUT_CLEAR_SCENERY",
+    "SHORTCUT_GRIDLINES_DISPLAY_TOGGLE",
+    "SHORTCUT_VIEW_CLIPPING",
+    "SHORTCUT_HIGHLIGHT_PATH_ISSUES_TOGGLE",
+    nullptr,
+};
+
+uint16_t GetKeyFromName(const char * key_name)
+{
+    const char *look = key_name;
+    uint16_t modifier = 0;
+
+    if (String::StartsWith(look, "SHIFT +", true))
+    {
+        modifier |= SHIFT; look += 7;
+    }
+    if (String::StartsWith(look, "CTRL +", true))
+    {
+        modifier |= CTRL; look += 6;
+    }
+    if (String::StartsWith(look, "ALT +", true))
+    {
+        modifier |= ALT; look += 5;
+    }
+
+    SDL_Scancode scancode = SDL_GetScancodeFromName(look);
+    if (scancode == SDL_SCANCODE_UNKNOWN)
+        return SHORTCUT_UNDEFINED;
+    else
+        return (((scancode & 0x1ff) | (modifier & 0xf000)) & 0xf1ff);
+    //name = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)(code & 0x001ff)));
+}
+
+bool KeyboardShortcuts::Load()
+{
+    bool result = false;
+    Reset();
+    try
+    {
+        std::string path = _env->GetFilePath(PATHID::CONFIG_KEYBOARD);
+        if (!File::Exists(path))
+            return LoadOld();
+
+        auto fs = FileStream(path, FILE_MODE_OPEN);
+        auto reader = std::unique_ptr<IIniReader>(CreateIniReader(&fs));
+
+        reader->ReadSection(HEAD);
+        int32_t count = reader->GetInt32("count", SHORTCUT_COUNT);
+        count = std::min<int32_t>(count, SHORTCUT_COUNT);
+
+        std::string keystr;
+        for (int32_t i = 0; i < count; i++)
+        {
+            keystr = reader->GetString(shortcut_names[i], "");
+            _keys[i] = keystr.empty() ? SHORTCUT_UNDEFINED : GetKeyFromName(keystr.c_str());
+        }
+        result = true;
+    }
+    catch (const std::exception& ex)
+    {
         Console::WriteLine("Error reading shortcut keys: %s", ex.what());
     }
     return result;
+    // char * xxx = reader->GetCString("Close all floating windows", "error");
+    //SDL_Scancode code = SDL_GetScancodeFromName(x);
 }
 
 bool KeyboardShortcuts::Save()
@@ -81,10 +224,16 @@ bool KeyboardShortcuts::Save()
     {
         std::string path = _env->GetFilePath(PATHID::CONFIG_KEYBOARD);
         auto fs = FileStream(path, FILE_MODE_WRITE);
-        fs.WriteValue<uint16_t>(KeyboardShortcuts::CURRENT_FILE_VERSION);
+        if (!fs.CanWrite())
+            throw IOException("SaveShortcut");
+        auto writer = std::unique_ptr<IIniWriter>(CreateIniWriter(&fs));
+        writer->WriteSection(HEAD);
+        writer->WriteInt32("version", VERSION);
+        writer->WriteInt32("count", SHORTCUT_COUNT);
+
         for (int32_t i = 0; i < SHORTCUT_COUNT; i++)
         {
-            fs.WriteValue<uint16_t>(_keys[i]);
+            writer->WriteString(shortcut_names[i], GetShortcutString(i));
         }
         result = true;
     }

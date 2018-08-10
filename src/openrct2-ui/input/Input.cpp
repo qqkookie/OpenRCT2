@@ -207,7 +207,7 @@ void input_handle_keyboard(bool isTitle)
             continue;
         }
 
-        key |= gInputPlaceObjectModifier << 8;
+        key |= gInputPlaceObjectModifier << 12;
 
         rct_window* w = window_find_by_class(WC_TEXTINPUT);
         if (w != nullptr)

@@ -54,6 +54,7 @@ namespace OpenRCT2::Localisation
         ~LocalisationService();
 
         const char* GetString(rct_string_id id) const;
+        const char* GetBaseString(rct_string_id id) const;
         std::tuple<rct_string_id, rct_string_id, rct_string_id> GetLocalisedScenarioStrings(
             const std::string& scenarioFilename) const;
         rct_string_id GetObjectOverrideStringId(const char* identifier, uint8_t index) const;

@@ -50,7 +50,8 @@ namespace OpenRCT2
     enum class PATHID
     {
         CONFIG,          // Main configuration (config.ini).
-        CONFIG_KEYBOARD, // Keyboard shortcuts. (hotkeys.cfg)
+        CONFIG_KEYBOARD, // Keyboard shortcuts. (shortcutkeys.ini)
+        CONFIG_KEYBOARD_OLD, // Keyboard shortcuts. (hotkeys.dat)
         CACHE_OBJECTS,   // Object repository cache (objects.idx).
         CACHE_TRACKS,    // Track repository cache (tracks.idx).
         CACHE_SCENARIOS, // Scenario repository cache (scenarios.idx).

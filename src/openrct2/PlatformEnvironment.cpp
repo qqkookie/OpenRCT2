@@ -214,7 +214,8 @@ const char * PlatformEnvironment::DirectoryNamesOpenRCT2[] =
 const char * PlatformEnvironment::FileNames[] =
 {
     "config.ini",           // CONFIG
-    "hotkeys.dat",          // CONFIG_KEYBOARD
+    "shortcutkeys.ini",     // CONFIG_KEYBOARD
+    "hotkeys.dat",          // CONFIG_KEYBOARD_OLD
     "objects.idx",          // CACHE_OBJECTS
     "tracks.idx",           // CACHE_TRACKS
     "scenarios.idx",        // CACHE_SCENARIOS

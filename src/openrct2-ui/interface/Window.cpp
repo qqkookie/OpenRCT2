@@ -312,6 +312,10 @@ foundSpace:
         x = 0;
     if (x + width > screenWidth)
         x = screenWidth - width;
+    if (y < 0)
+        y = 0;
+    if (y + height > screenHeight)
+        x = screenHeight - height;
 
     return window_create(x, y, width, height, event_handlers, cls, flags);
 }

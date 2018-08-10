@@ -92,6 +92,12 @@ const char* language_get_string(rct_string_id id)
     return localisationService.GetString(id);
 }
 
+const char* language_get_base_string(rct_string_id id)
+{
+    const auto& localisationService = OpenRCT2::GetContext()->GetLocalisationService();
+    return localisationService.GetBaseString(id);
+}
+
 bool language_open(int32_t id)
 {
     auto context = OpenRCT2::GetContext();

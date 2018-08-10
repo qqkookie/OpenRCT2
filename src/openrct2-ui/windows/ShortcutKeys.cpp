@@ -159,21 +159,21 @@ const rct_string_id ShortcutStringIds[SHORTCUT_COUNT] = {
 rct_window* window_shortcut_keys_open()
 {
     rct_window* w = window_bring_to_front_by_class(WC_KEYBOARD_SHORTCUT_LIST);
-    if (w == nullptr)
-    {
-        w = window_create_auto_pos(WW, WH, &window_shortcut_events, WC_KEYBOARD_SHORTCUT_LIST, WF_RESIZABLE);
+    if (w != nullptr)
+        return window_toggle(w);
 
-        w->widgets = window_shortcut_widgets;
-        w->enabled_widgets = (1 << WIDX_CLOSE) | (1 << WIDX_RESET);
-        window_init_scroll_widgets(w);
+    w = window_create_auto_pos(WW, WH, &window_shortcut_events, WC_KEYBOARD_SHORTCUT_LIST, WF_RESIZABLE);
 
-        w->no_list_items = SHORTCUT_COUNT;
-        w->selected_list_item = -1;
-        w->min_width = WW;
-        w->min_height = WH;
-        w->max_width = WW_SC_MAX;
-        w->max_height = WH_SC_MAX;
-    }
+    w->widgets = window_shortcut_widgets;
+    w->enabled_widgets = (1 << WIDX_CLOSE) | (1 << WIDX_RESET);
+    window_init_scroll_widgets(w);
+
+    w->no_list_items = SHORTCUT_COUNT;
+    w->selected_list_item = -1;
+    w->min_width = WW;
+    w->min_height = WH;
+    w->max_width = WW_SC_MAX;
+    w->max_height = WH_SC_MAX;
     return w;
 }
 
