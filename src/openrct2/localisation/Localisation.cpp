@@ -35,7 +35,7 @@
 #include "Date.h"
 #include "Localisation.h"
 
-// STR_TITLE_MUSIC_TIP in Asian language exceeds 310 bytes
+// Some tooltips of Asian language in UTF8 exceeds 400+ bytes
 char gCommonStringFormatBuffer[512];
 uint8_t gCommonFormatArgs[80];
 uint8_t gMapTooltipFormatArgs[40];

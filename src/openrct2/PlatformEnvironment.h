@@ -58,8 +58,8 @@ namespace OpenRCT2
         NETWORK_GROUPS,  // Server groups with permissions (groups.json).
         NETWORK_SERVERS, // Saved servers (servers.cfg).
         NETWORK_USERS,   // Users and their groups (users.json).
-        SCORES,          // Scenario scores (highscores.dat).
-        SCORES_ALT,      // Alternate new scores (highscores2.dat).
+        SCORES,          // Scenario high scores ini file (highscores.ini).
+        SCORES_OLD,      // Old scenario scores (highscores.dat).
         SCORES_LEGACY,   // Scenario scores, legacy (scores.dat).
         SCORES_RCT2,     // Scenario scores, rct2 (\Saved Games\scores.dat).
         CHANGELOG,       // Notable changes to the game between versions, distributed with the game.

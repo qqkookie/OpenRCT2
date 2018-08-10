@@ -155,9 +155,9 @@ public:
         return result;
     }
 
-    float GetFloat(const std::string& name, float defaultValue) const override
+    double GetFloat(const std::string& name, double defaultValue) const override
     {
-        float result = defaultValue;
+        double result = defaultValue;
         std::string value;
         if (TryGetString(name, &value))
         {
@@ -388,7 +388,7 @@ public:
         return defaultValue;
     }
 
-    float GetFloat([[maybe_unused]] const std::string& name, float defaultValue) const override
+    double GetFloat([[maybe_unused]] const std::string& name, double defaultValue) const override
     {
         return defaultValue;
     }

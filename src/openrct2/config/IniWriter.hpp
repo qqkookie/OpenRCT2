@@ -24,7 +24,7 @@ interface IIniWriter
 
     virtual void WriteBoolean(const std::string& name, bool value) abstract;
     virtual void WriteInt32(const std::string& name, int32_t value) abstract;
-    virtual void WriteFloat(const std::string& name, float value) abstract;
+    virtual void WriteFloat(const std::string& name, double value) abstract;
     virtual void WriteString(const std::string& name, const std::string& value) abstract;
     virtual void WriteEnum(const std::string& name, const std::string& key) abstract;
 

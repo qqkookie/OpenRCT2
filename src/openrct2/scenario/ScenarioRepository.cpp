@@ -27,6 +27,8 @@
 #include "../localisation/LocalisationService.h"
 #include "../platform/platform.h"
 #include "../rct12/SawyerChunkReader.h"
+#include "../config/IniReader.hpp"
+#include "../config/IniWriter.hpp"
 #include "Scenario.h"
 #include "ScenarioSources.h"
 
@@ -320,9 +322,10 @@ private:
 class ScenarioRepository final : public IScenarioRepository
 {
 private:
-    static constexpr uint32_t MAGIC_NUMBER = 0x3248524f; // ORH2
-    static constexpr uint32_t VERSION = 2;
-    bool old_highscores = false;
+    static constexpr char HEAD[] = "OpenRCT2";
+    static constexpr char SCENS[] = "scen";
+    static constexpr int32_t VERSION = 11;
+    std::string _last_winner;
 
     std::shared_ptr<IPlatformEnvironment> const _env;
     ScenarioFileIndex const _fileIndex;
@@ -429,42 +432,42 @@ public:
         int32_t dayRecord = gScenarioCompletedDays;
 
         scenario_index_entry* scenario = GetByFilename(scenarioFileName);
-        if (scenario != nullptr)
+        if (scenario == nullptr)
+            return false;
+
+        // Check if record company value has been broken or record days to complete has been broken
+        // Or, the company value and record is the tie but no name is registered
+        scenario_highscore_entry* highscore = scenario->highscore;
+        if ( (highscore != nullptr && companyValue <= highscore->company_value
+            && highscore->record_days > 0 && dayRecord >= highscore->record_days)
+            && ( (! String::IsNullOrEmpty(highscore->scen_winner) && String::IsNullOrEmpty(scen_winner))
+                 || (companyValue < highscore->company_value && (dayRecord > highscore->record_days ))))
+            return false;
+
+        if (highscore == nullptr)
         {
-            // Check if record company value has been broken or the highscore is the same but no name is registered
-            // Or, if record days to complete has been broken or same but no name is registered
-            scenario_highscore_entry* highscore = scenario->highscore;
-            if (highscore == nullptr || companyValue > highscore->company_value
-                || highscore->record_days == 0 || dayRecord < highscore->record_days
-                || (String::IsNullOrEmpty(highscore->scen_winner)
-                    && (companyValue == highscore->company_value) || (dayRecord == highscore->record_days)))
-            {
-                if (highscore == nullptr)
-                {
-                    highscore = InsertHighscore();
-                    highscore->timestamp = platform_get_datetime_now_utc();
-                    scenario->highscore = highscore;
-                }
-                else
-                {
-                    if (!String::IsNullOrEmpty(highscore->scen_winner))
-                    {
-                        highscore->timestamp = platform_get_datetime_now_utc();
-                    }
-                    SafeFree(highscore->scen_file);
-                    SafeFree(highscore->scen_winner);
-                }
-                highscore->scen_file = String::Duplicate(Path::GetFileName(scenario->path));
-                highscore->scen_winner = String::Duplicate(scen_winner);
-                if (companyValue > highscore->company_value )
-                    highscore->company_value = companyValue;
-                if (highscore->record_days == 0 || dayRecord < highscore->record_days)
-                    highscore->record_days = dayRecord;
-                SaveHighscores();
-                return true;
-            }
+            highscore = InsertHighscore();
+            scenario->highscore = highscore;
         }
-        return false;
+        else
+        {
+            SafeFree(highscore->scen_file);
+            SafeFree(highscore->scen_winner);
+        }
+        // seconds from Jan 1, Year 2000 (UTC)
+        highscore->timestamp = platform_get_datetime_now_utc() / 10000000 - 63017720400ULL;
+        highscore->scen_file = String::Duplicate(Path::GetFileName(scenario->path));
+        if (!String::IsNullOrEmpty(scen_winner))
+            _last_winner = scen_winner;
+        highscore->scen_winner = String::Duplicate(_last_winner);
+
+        if (companyValue > highscore->company_value )
+            highscore->company_value = companyValue;
+        if (highscore->record_days == 0 || dayRecord < highscore->record_days)
+            highscore->record_days = dayRecord;
+
+        SaveHighscores();
+        return true;
     }
 
 private:
@@ -570,38 +573,55 @@ private:
         }
     }
 
+    int32_t checksum(const scenario_highscore_entry* highscore)
+    {
+        return (highscore->timestamp ^ (highscore->timestamp << 8)
+            + highscore->company_value + (highscore->company_value << 16)
+            + (highscore->record_days << 8)) ^ 0x9E3779B9U; // golden ratio
+    }
+
     void LoadScores()
     {
-        std::string path = _env->GetFilePath(PATHID::SCORES_ALT);
-        if (!platform_file_exists(path.c_str()))
+        std::string path = _env->GetFilePath(PATHID::SCORES);
+        if (!File::Exists(path))
         {
-            path = _env->GetFilePath(PATHID::SCORES);
-            if (!platform_file_exists(path.c_str()))
-                return;
+            _last_winner = platform_get_username();
+            return;
         }
 
         try
         {
-            auto fs = FileStream(path, FILE_MODE_OPEN);
-            uint32_t magic = fs.ReadValue<uint32_t>();
-            if (magic == 1)
-            {
-                LoadScoresOld();
-                return;
-            }
-            fs.ReadValue<uint32_t>();   // VERSION
+            auto fs = FileStream( path, FILE_MODE_OPEN);
+            auto reader = std::unique_ptr<IIniReader>(CreateIniReader(&fs));
+            if (!reader->ReadSection(HEAD))
+                throw IOException("hiscore1");
+            int32_t version;
+            version = reader->GetInt32("version", 0);
+
+            _last_winner = reader->GetString("last_winner", _last_winner);
+            int32_t cnt = reader->GetInt32("count", 0);
+            char prefix[32], section[32];
+            String::Set(prefix, sizeof prefix, reader->GetString("prefix", SCENS).c_str());
 
             ClearHighscores();
 
-            uint32_t numHighscores = fs.ReadValue<uint32_t>();
-            for (uint32_t i = 0; i < numHighscores; i++)
+            for (int32_t i = 0; i < cnt; i++)
             {
+                String::Format(section, sizeof section, "%s%d", prefix, i+1);
+                if (!reader->ReadSection(section))
+                    break;
                 scenario_highscore_entry* highscore = InsertHighscore();
-                highscore->timestamp = fs.ReadValue<datetime64>();
-                highscore->company_value = fs.ReadValue<money32>();
-                highscore->record_days = fs.ReadValue<int32_t>();
-                highscore->scen_file = fs.ReadString();
-                highscore->scen_winner = fs.ReadString();
+                highscore->timestamp = reader->GetInt32("timestamp", 0);
+                highscore->scen_file = String::Duplicate((reader->GetString("file", "error")).c_str());
+                highscore->scen_winner = String::Duplicate(reader->GetString("winner", "error").c_str());
+                highscore->company_value = (money32)(reader->GetFloat("company_value", 0.0) * 10.0 + 0.5);
+                highscore->record_days = reader->GetInt32("record_days", 0);
+                if (checksum(highscore) != reader->GetInt32("checksum", 0))
+                {
+                    SafeFree(highscore->scen_winner);
+                    highscore->company_value = 0; highscore->record_days = 0;
+                    Console::Error::WriteLine("Highscore checksum mismatch");
+                }
             }
         }
         catch (const std::exception&)
@@ -612,7 +632,7 @@ private:
 
     void LoadScoresOld()
     {
-        std::string path = _env->GetFilePath(PATHID::SCORES);
+        std::string path = _env->GetFilePath(PATHID::SCORES_OLD);
         if (!platform_file_exists(path.c_str()))
         {
             return;
@@ -637,9 +657,8 @@ private:
                 highscore->scen_file = fs.ReadString();
                 highscore->scen_winner = fs.ReadString();
                 highscore->company_value = fs.ReadValue<money32>();
-                highscore->timestamp = fs.ReadValue<datetime64>();
+                highscore->timestamp = fs.ReadValue<datetime64>()/10000000;
             }
-            old_highscores = true;
         }
         catch (const std::exception&)
         {
@@ -700,7 +719,7 @@ private:
                                 std::string name = rct2_to_utf8(scBasic.CompletedBy, RCT2_LANGUAGE_ID_ENGLISH_UK);
                                 highscore->scen_winner = String::Duplicate(name.c_str());
                                 highscore->company_value = scBasic.CompanyValue;
-                                highscore->timestamp = DATETIME64_MIN;
+                                highscore->timestamp = 0;
                                 break;
                             }
                         }
@@ -712,7 +731,7 @@ private:
                         std::string name = rct2_to_utf8(scBasic.CompletedBy, RCT2_LANGUAGE_ID_ENGLISH_UK);
                         highscore->scen_winner = String::Duplicate(name.c_str());
                         highscore->company_value = scBasic.CompanyValue;
-                        highscore->timestamp = DATETIME64_MIN;
+                        highscore->timestamp = 0;
                     }
                 }
             }
@@ -759,22 +778,35 @@ private:
 
     void SaveHighscores()
     {
-        // Don't overwrite existing old V1 highscore.dat, use alternate file.
-        std::string path = _env->GetFilePath(old_highscores ? PATHID::SCORES_ALT : PATHID::SCORES);
+        std::string path = _env->GetFilePath(PATHID::SCORES);
         try
         {
-            auto fs = FileStream(path, FILE_MODE_WRITE);
-            fs.WriteValue<uint32_t>(MAGIC_NUMBER);
-            fs.WriteValue<uint32_t>(VERSION);
-            fs.WriteValue<uint32_t>((uint32_t)_highscores.size());
+            auto fs = FileStream( path, FILE_MODE_WRITE);
+            if (!fs.CanWrite())
+                throw IOException("SaveHighscores");
+            auto writer = std::unique_ptr<IIniWriter>(CreateIniWriter(&fs));
+
+            writer->WriteSection(HEAD);
+            writer->WriteInt32("version", VERSION);
+            writer->WriteString("last_winner", _last_winner);
+            writer->WriteString("prefix", SCENS);
+            writer->WriteInt32("count", (int32_t)_highscores.size());
+
+            char section[32];
             for (size_t i = 0; i < _highscores.size(); i++)
             {
+                String::Format(section, sizeof section, "%s%d", SCENS, i + 1);
+                writer->WriteSection(section);
+
                 const scenario_highscore_entry* highscore = _highscores[i];
-                fs.WriteValue(highscore->timestamp);
-                fs.WriteValue(highscore->company_value);
-                fs.WriteValue(highscore->record_days);
-                fs.WriteString(highscore->scen_file);
-                fs.WriteString(highscore->scen_winner);
+                writer->WriteInt32("timestamp", highscore->timestamp);
+                writer->WriteFloat("company_value",
+                    std::round( highscore->company_value *10.0)/100.0);
+                writer->WriteInt32("record_days", highscore->record_days);
+                writer->WriteString("file", highscore->scen_file);
+                writer->WriteString("winner", highscore->scen_winner);
+                writer->WriteInt32("checksum", checksum(highscore));
+
             }
         }
         catch (const std::exception&)

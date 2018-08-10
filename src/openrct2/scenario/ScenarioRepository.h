@@ -17,7 +17,7 @@ struct rct_object_entry;
 
 struct scenario_highscore_entry
 {
-    datetime64 timestamp;
+    uint32_t timestamp;
     money32 company_value;
     int32_t record_days;
     utf8* scen_file;

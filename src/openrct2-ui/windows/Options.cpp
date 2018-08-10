@@ -356,7 +356,7 @@ static rct_widget window_options_advanced_widgets[] = {
     { WWT_CHECKBOX,         2,  10,     299,    99,     110,    STR_SAVE_PLUGIN_DATA,                       STR_SAVE_PLUGIN_DATA_TIP },                         // Export plug-in objects with saved games
     { WWT_CHECKBOX,         2,  10,     299,    114,    125,    STR_STAY_CONNECTED_AFTER_DESYNC,            STR_STAY_CONNECTED_AFTER_DESYNC_TIP },              // Do not disconnect after the client desynchronises with the server
     { WWT_LABEL,            1,  23,     298,    130,    159,    STR_OPTIONS_AUTOSAVE_FREQUENCY_LABEL,       STR_NONE },
-    SPINNER_WIDGETS       ( 1,  165,    289,    130,    141,    STR_NONE,                   STR_AUTOSAVE_FREQUENCY_TIP ),                       // NB: 3 widgets
+    SPINNER_WIDGETS       ( 1,  165,    289,    130,    141,    STR_NONE,                   				STR_AUTOSAVE_FREQUENCY_TIP ),                       // NB: 3 widgets
     { WWT_LABEL,            1,  23,     298,    148,    159,    STR_PATH_TO_RCT1,                           STR_PATH_TO_RCT1_TIP },                             // RCT 1 path text
     { WWT_BUTTON,           1,  24,     289,    163,    176,    STR_NONE,                                   STR_STRING_TOOLTIP },                               // RCT 1 path button
     { WWT_BUTTON,           1,  289,    299,    163,    176,    STR_CLOSE_X,                                STR_PATH_TO_RCT1_CLEAR_TIP },                       // RCT 1 path clear button

@@ -48,7 +48,7 @@ public:
         WriteProperty(name, std::to_string(value));
     }
 
-    void WriteFloat(const std::string& name, float value) override
+    void WriteFloat(const std::string& name, double value) override
     {
         WriteProperty(name, std::to_string(value));
     }

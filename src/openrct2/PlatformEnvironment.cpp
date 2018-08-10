@@ -222,8 +222,8 @@ const char * PlatformEnvironment::FileNames[] =
     "groups.json",          // NETWORK_GROUPS
     "servers.cfg",          // NETWORK_SERVERS
     "users.json",           // NETWORK_USERS
-    "highscores.dat",       // SCORES
-    "highscores2.dat",      // SCORES_ALT
+    "highscores.ini",       // SCORES
+    "highscores.dat",       // SCORES_OLD
     "scores.dat",           // SCORES (LEGACY)
     "Saved Games" PATH_SEPARATOR "scores.dat",  // SCORES (RCT2)
     "changelog.txt"         // CHANGELOG
