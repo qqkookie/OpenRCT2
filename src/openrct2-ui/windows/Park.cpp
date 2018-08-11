@@ -958,6 +958,8 @@ rct_window* window_park_rating_open()
         window->viewport_focus_coordinates.x = -1;
         window->viewport_focus_coordinates.y = -1;
     }
+    else if (window_toggle(window) == nullptr)
+        return nullptr;
 
     if (input_test_flag(INPUT_FLAG_TOOL_ACTIVE))
         if (window->classification == gCurrentToolWidget.window_classification
@@ -1079,6 +1081,8 @@ rct_window* window_park_guests_open()
         window->viewport_focus_coordinates.x = -1;
         window->viewport_focus_coordinates.y = -1;
     }
+    else if (window_toggle(window) == nullptr)
+        return nullptr;
 
     if (input_test_flag(INPUT_FLAG_TOOL_ACTIVE))
         if (window->classification == gCurrentToolWidget.window_classification

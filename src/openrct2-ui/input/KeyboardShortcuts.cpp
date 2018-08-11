@@ -46,44 +46,7 @@ void KeyboardShortcuts::Reset()
     }
 }
 
-#define OLD_FILE_VERSION    1
-bool KeyboardShortcuts::LoadOld()
-{
-    bool result = false;
-    Reset();
-    try
-    {
-        std::string path = _env->GetFilePath(PATHID::CONFIG_KEYBOARD_OLD);
-        if (File::Exists(path))
-        {
-            auto fs = FileStream(path, FILE_MODE_OPEN);
-            uint16_t version = fs.ReadValue<uint16_t>();
-            if (version == OLD_FILE_VERSION)
-            {
-                uint16_t key;
-                int32_t numShortcutsInFile = (fs.GetLength() - sizeof(uint16_t)) / sizeof(uint16_t);
-                int32_t numShortcutsToRead = std::min<int32_t>(SHORTCUT_COUNT, numShortcutsInFile);
-                for (int32_t i = 0; i < numShortcutsToRead; i++)
-                {
-                    key = fs.ReadValue<uint16_t>();
-                    if (key & 0xff00)
-                        key = key;
-                    if (key != SHORTCUT_UNDEFINED)
-                        key = ((key & 0x0f00) << 4) | (key & 0xff); // move modifier bits position
-                    _keys[i] = key;
-                }
-                result = true;
-            }
-        }
-    }
-    catch (const std::exception& ex)
-    {
-        Console::WriteLine("Error reading old shortcut keys: %s", ex.what());
-    }
-    return result;
-}
-
-static const char* shortcut_names[] =
+static const char* shortcut_names[SHORTCUT_COUNT] =
 {
     "SHORTCUT_CLOSE_TOP_MOST_WINDOW",
     "SHORTCUT_CLOSE_ALL_FLOATING_WINDOWS",
@@ -154,7 +117,16 @@ static const char* shortcut_names[] =
     "SHORTCUT_GRIDLINES_DISPLAY_TOGGLE",
     "SHORTCUT_VIEW_CLIPPING",
     "SHORTCUT_HIGHLIGHT_PATH_ISSUES_TOGGLE",
-    nullptr,
+    "SHORTCUT_PAUSE_GAME_ALT",
+    "SHORTCUT_ZOOM_VIEW_OUT_ALT",
+    "SHORTCUT_ZOOM_VIEW_IN_ALT",
+    "SHORTCUT_ROTATE_VIEW_CLOCKWISE_ALT",
+    "SHORTCUT_ROTATE_VIEW_ANTICLOCKWISE_ALT",
+    "SHORTCUT_ROTATE_CONSTRUCTION_OBJECT_CCW",
+    "SHORTCUT_SCROLL_MAP_UP_ALT",
+    "SHORTCUT_SCROLL_MAP_LEFT_ALT",
+    "SHORTCUT_SCROLL_MAP_DOWN_ALT",
+    "SHORTCUT_SCROLL_MAP_RIGHT_ALT",
 };
 
 uint16_t GetKeyFromName(const char * key_name)
@@ -213,8 +185,6 @@ bool KeyboardShortcuts::Load()
         Console::WriteLine("Error reading shortcut keys: %s", ex.what());
     }
     return result;
-    // char * xxx = reader->GetCString("Close all floating windows", "error");
-    //SDL_Scancode code = SDL_GetScancodeFromName(x);
 }
 
 bool KeyboardShortcuts::Save()
@@ -240,6 +210,45 @@ bool KeyboardShortcuts::Save()
     catch (const std::exception& ex)
     {
         Console::WriteLine("Error writing shortcut keys: %s", ex.what());
+    }
+    return result;
+}
+
+#define FILE_VERSION_OLD        1
+#define SHORTCUT_COUNT_OLD      67
+
+bool KeyboardShortcuts::LoadOld()
+{
+    bool result = false;
+    Reset();
+    try
+    {
+        std::string path = _env->GetFilePath(PATHID::CONFIG_KEYBOARD_OLD);
+        if (File::Exists(path))
+        {
+            auto fs = FileStream(path, FILE_MODE_OPEN);
+            uint16_t version = fs.ReadValue<uint16_t>();
+            if (version == FILE_VERSION_OLD)
+            {
+                uint16_t key;
+                int32_t numShortcutsInFile = (fs.GetLength() - sizeof(uint16_t)) / sizeof(uint16_t);
+                int32_t numShortcutsToRead = std::min<int32_t>(SHORTCUT_COUNT_OLD, numShortcutsInFile);
+                for (int32_t i = 0; i < numShortcutsToRead; i++)
+                {
+                    key = fs.ReadValue<uint16_t>();
+                    if (key & 0xff00)
+                        key = key;
+                    if (key != SHORTCUT_UNDEFINED)
+                        key = ((key & 0x0f00) << 4) | (key & 0xff); // move modifier bits position
+                    _keys[i] = key;
+                }
+                result = true;
+            }
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        Console::WriteLine("Error reading old shortcut keys: %s", ex.what());
     }
     return result;
 }
@@ -307,8 +316,12 @@ std::string KeyboardShortcuts::GetShortcutString(int32_t shortcut) const
 
 void KeyboardShortcuts::GetKeyboardMapScroll(const uint8_t* keysState, int32_t* x, int32_t* y) const
 {
-    for (int32_t shortcutId = SHORTCUT_SCROLL_MAP_UP; shortcutId <= SHORTCUT_SCROLL_MAP_RIGHT; shortcutId++)
-    {
+    static const uint8_t scroll_shortcuts[] = {
+        SHORTCUT_SCROLL_MAP_UP, SHORTCUT_SCROLL_MAP_LEFT, SHORTCUT_SCROLL_MAP_DOWN, SHORTCUT_SCROLL_MAP_RIGHT,
+        SHORTCUT_SCROLL_MAP_UP_ALT, SHORTCUT_SCROLL_MAP_LEFT_ALT, SHORTCUT_SCROLL_MAP_DOWN_ALT, SHORTCUT_SCROLL_MAP_RIGHT_ALT,
+    };
+    for ( auto& shortcutId : scroll_shortcuts )
+    { 
         uint16_t shortcutKey = _keys[shortcutId];
         uint8_t scancode = shortcutKey & 0xFF;
 
@@ -342,15 +355,19 @@ void KeyboardShortcuts::GetKeyboardMapScroll(const uint8_t* keysState, int32_t* 
         switch (shortcutId)
         {
             case SHORTCUT_SCROLL_MAP_UP:
+            case SHORTCUT_SCROLL_MAP_UP_ALT:
                 *y = -1;
                 break;
             case SHORTCUT_SCROLL_MAP_LEFT:
+            case SHORTCUT_SCROLL_MAP_LEFT_ALT:
                 *x = -1;
                 break;
             case SHORTCUT_SCROLL_MAP_DOWN:
+            case SHORTCUT_SCROLL_MAP_DOWN_ALT:
                 *y = 1;
                 break;
             case SHORTCUT_SCROLL_MAP_RIGHT:
+            case SHORTCUT_SCROLL_MAP_RIGHT_ALT:
                 *x = 1;
                 break;
             default:
@@ -464,4 +481,14 @@ const uint16_t KeyboardShortcuts::DefaultKeys[SHORTCUT_COUNT] = {
     SDL_SCANCODE_7,                           // SHORTCUT_GRIDLINES_DISPLAY_TOGGLE
     SHORTCUT_UNDEFINED,                       // SHORTCUT_VIEW_CLIPPING
     SDL_SCANCODE_I,                           // SHORTCUT_HIGHLIGHT_PATH_ISSUES_TOGGLE
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_PAUSE_GAME_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_ZOOM_VIEW_OUT_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_ZOOM_VIEW_IN_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_ROTATE_VIEW_CLOCKWISE_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_ROTATE_VIEW_ANTICLOCKWISE_ALT
+    SDL_SCANCODE_X,                           // SHORTCUT_ROTATE_CONSTRUCTION_OBJECT_CCW
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_SCROLL_MAP_UP_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_SCROLL_MAP_LEFT_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_SCROLL_MAP_DOWN_ALT
+    SHORTCUT_UNDEFINED,                       // SHORTCUT_SCROLL_MAP_RIGHT_ALT
 };

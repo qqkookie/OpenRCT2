@@ -2504,7 +2504,8 @@ STR_2496    :Pause game
 STR_2497    :Zoom view out
 STR_2498    :Zoom view in
 STR_2499    :Rotate view clockwise
-STR_2500    :Rotate construction object
+# STR_2500    :Rotate construction object
+STR_2500    :Rotate construction object clockwise
 STR_2501    :Underground view toggle
 STR_2502    :Hide base land toggle
 STR_2503    :Hide vertical land toggle
@@ -4579,6 +4580,8 @@ STR_6307    :{SMALLFONT}{BLACK}Opening already open window again will toggle it,
 STR_6308    :Every {INT32} minutes
 STR_6309    :{SMALLFONT}{BLACK}Rotate view 90{DEGREE} counterclockwise
 STR_6310    :{SMALLFONT}{BLACK}File save menu
+STR_6311    :Rotate construction object counterclockwise
+
 
 #############
 # Scenarios #

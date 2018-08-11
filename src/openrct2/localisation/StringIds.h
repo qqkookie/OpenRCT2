@@ -3942,6 +3942,8 @@ enum
     STR_ROTATE_CCW_TIP = 6309,
     STR_FILE_MENU_TIP = 6310,
 
+    STR_SHORTCUT_ROTATE_CONSTRUCTION_OBJECT_CCW = 6311,
+
     // Have to include resource strings (from scenarios and objects) for the time being now that language is partially working
     STR_COUNT = 32768
 };

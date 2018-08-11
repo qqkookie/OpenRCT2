@@ -201,6 +201,13 @@ static void shortcut_rotate_construction_object()
     }
 }
 
+static void shortcut_rotate_construction_object_ccw()
+{
+    shortcut_rotate_construction_object();
+    shortcut_rotate_construction_object();
+    shortcut_rotate_construction_object();
+}
+
 static void shortcut_underground_view_toggle()
 {
     if (gScreenFlags & SCREEN_FLAGS_TITLE_DEMO)
@@ -821,6 +828,16 @@ namespace
         shortcut_gridlines_toggle,
         shortcut_view_clipping,
         shortcut_highlight_path_issues_toggle,
+        shortcut_pause_game,
+        shortcut_zoom_view_out,
+        shortcut_zoom_view_in,
+        shortcut_rotate_view_clockwise,
+        shortcut_rotate_view_anticlockwise,
+        shortcut_rotate_construction_object_ccw,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
     };
 } // anonymous namespace
 
