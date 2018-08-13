@@ -10,6 +10,8 @@
 #include "../UiContext.h"
 #include "../interface/InGameConsole.h"
 
+#include <algorithm>
+#include <limits>
 #include <openrct2-ui/interface/Dropdown.h>
 #include <openrct2-ui/interface/LandTool.h>
 #include <openrct2-ui/interface/Viewport.h>
@@ -23,7 +25,6 @@
 #include <openrct2/ParkImporter.h>
 #include <openrct2/audio/audio.h>
 #include <openrct2/config/Config.h>
-#include <openrct2/core/Math.hpp>
 #include <openrct2/core/Util.hpp>
 #include <openrct2/interface/InteractiveConsole.h>
 #include <openrct2/interface/Screenshot.h>
@@ -1253,19 +1254,40 @@ static void sub_6E1F34(
     }
 
     uint8_t scenery_type = selected_scenery >> 8;
+    uint16_t maxPossibleHeight = (std::numeric_limits<decltype(rct_tile_element::base_height)>::max() - 32) << MAX_ZOOM_LEVEL;
     bool can_raise_item = false;
 
     if (scenery_type == SCENERY_TYPE_SMALL)
     {
         rct_scenery_entry* scenery_entry = get_small_scenery_entry(selected_scenery);
-
+        maxPossibleHeight -= scenery_entry->small_scenery.height;
         if (scenery_small_entry_has_flag(scenery_entry, SMALL_SCENERY_FLAG_STACKABLE))
         {
             can_raise_item = true;
         }
     }
-    else if (scenery_type == SCENERY_TYPE_WALL || scenery_type == SCENERY_TYPE_LARGE)
+    else if (scenery_type == SCENERY_TYPE_WALL)
     {
+        rct_scenery_entry* scenery_entry = get_wall_entry(selected_scenery);
+        if (scenery_entry)
+        {
+            maxPossibleHeight -= scenery_entry->wall.height;
+        }
+        can_raise_item = true;
+    }
+    else if (scenery_type == SCENERY_TYPE_LARGE)
+    {
+        rct_scenery_entry* scenery_entry = get_large_scenery_entry(selected_scenery);
+        if (scenery_entry)
+        {
+            int16_t tileZ = 0;
+            for (int32_t i = 0; scenery_entry->large_scenery.tiles[i].x_offset != -1; ++i)
+            {
+                assert(i < MAXIMUM_MAP_SIZE_TECHNICAL);
+                tileZ += scenery_entry->large_scenery.tiles[i].z_clearance;
+            }
+            maxPossibleHeight -= tileZ;
+        }
         can_raise_item = true;
     }
 
@@ -1320,7 +1342,14 @@ static void sub_6E1F34(
             if (input_test_place_object_modifier(PLACE_OBJECT_MODIFIER_SHIFT_Z))
             {
                 // SHIFT pressed
-                gSceneryShiftPressZOffset = (gSceneryShiftPressY - y + 4) & 0xFFF8;
+                gSceneryShiftPressZOffset = (gSceneryShiftPressY - y + 4);
+                // Scale delta by zoom to match mouse position.
+                auto* mainWnd = window_get_main();
+                if (mainWnd && mainWnd->viewport)
+                {
+                    gSceneryShiftPressZOffset <<= mainWnd->viewport->zoom;
+                }
+                gSceneryShiftPressZOffset = floor2(gSceneryShiftPressZOffset, 8);
 
                 x = gSceneryShiftPressX;
                 y = gSceneryShiftPressY;
@@ -1367,7 +1396,7 @@ static void sub_6E1F34(
                         int16_t z = (tile_element->base_height * 8) & 0xFFF0;
                         z += gSceneryShiftPressZOffset;
 
-                        z = std::max<int16_t>(z, 16);
+                        z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                         gSceneryPlaceZ = z;
                     }
@@ -1384,7 +1413,7 @@ static void sub_6E1F34(
                         z += gSceneryShiftPressZOffset;
                     }
 
-                    z = std::max<int16_t>(z, 16);
+                    z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                     gSceneryPlaceZ = z;
                 }
@@ -1451,7 +1480,7 @@ static void sub_6E1F34(
                     int16_t z = (tile_element->base_height * 8) & 0xFFF0;
                     z += gSceneryShiftPressZOffset;
 
-                    z = std::max<int16_t>(z, 16);
+                    z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                     gSceneryPlaceZ = z;
                 }
@@ -1467,7 +1496,7 @@ static void sub_6E1F34(
                     z += gSceneryShiftPressZOffset;
                 }
 
-                z = std::max<int16_t>(z, 16);
+                z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                 gSceneryPlaceZ = z;
             }
@@ -1548,7 +1577,7 @@ static void sub_6E1F34(
                     int16_t z = (tile_element->base_height * 8) & 0xFFF0;
                     z += gSceneryShiftPressZOffset;
 
-                    z = std::max<int16_t>(z, 16);
+                    z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                     gSceneryPlaceZ = z;
                 }
@@ -1564,7 +1593,7 @@ static void sub_6E1F34(
                     z += gSceneryShiftPressZOffset;
                 }
 
-                z = std::max<int16_t>(z, 16);
+                z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                 gSceneryPlaceZ = z;
             }
@@ -1607,7 +1636,7 @@ static void sub_6E1F34(
                     int16_t z = (tile_element->base_height * 8) & 0xFFF0;
                     z += gSceneryShiftPressZOffset;
 
-                    z = std::max<int16_t>(z, 16);
+                    z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                     gSceneryPlaceZ = z;
                 }
@@ -1623,7 +1652,7 @@ static void sub_6E1F34(
                     z += gSceneryShiftPressZOffset;
                 }
 
-                z = std::max<int16_t>(z, 16);
+                z = std::clamp<int16_t>(z, 16, maxPossibleHeight);
 
                 gSceneryPlaceZ = z;
             }

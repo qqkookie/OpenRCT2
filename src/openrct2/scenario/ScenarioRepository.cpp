@@ -18,7 +18,6 @@
 #include "../core/File.h"
 #include "../core/FileIndex.hpp"
 #include "../core/FileStream.hpp"
-#include "../core/Math.hpp"
 #include "../core/Path.hpp"
 #include "../core/String.hpp"
 #include "../core/Util.hpp"
@@ -50,7 +49,10 @@ static int32_t ScenarioCategoryCompare(int32_t categoryA, int32_t categoryB)
         return -1;
     if (categoryB == SCENARIO_CATEGORY_BUILD_YOUR_OWN)
         return 1;
-    return Math::Sign(categoryA - categoryB);
+    if (categoryA < categoryB)
+        return -1;
+    else
+        return 1;
 }
 
 static int32_t scenario_index_entry_CompareByCategory(const scenario_index_entry& entryA, const scenario_index_entry& entryB)
@@ -243,8 +245,14 @@ private:
                 if (header.type == S6_TYPE_SCENARIO)
                 {
                     rct_s6_info info = chunkReader.ReadChunkAs<rct_s6_info>();
-                    rct2_to_utf8_self(info.name, sizeof(info.name));
-                    rct2_to_utf8_self(info.details, sizeof(info.details));
+                    // If the name or the details contain a colour code, they might be in UTF-8 already.
+                    // This is caused by a bug that was in OpenRCT2 for 3 years.
+                    if (!String::ContainsColourCode(info.name) && !String::ContainsColourCode(info.details))
+                    {
+                        rct2_to_utf8_self(info.name, sizeof(info.name));
+                        rct2_to_utf8_self(info.details, sizeof(info.details));
+                    }
+
                     *entry = CreateNewScenarioEntry(path, timestamp, &info);
                     return true;
                 }

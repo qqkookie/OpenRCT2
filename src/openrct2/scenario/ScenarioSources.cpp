@@ -46,6 +46,8 @@ namespace ScenarioSources
 
         // RCT1 pack by RCTScenarioLover has a mistake:
         { "Geoffrey Gardens",                       "Geoffery Gardens"                          },
+        // RCT1 pack by Crappage uses park name to identify Utopia Park, instead of scenario list name:
+        { "Utopia Park",                            "Utopia"                                    },
 
         // CD Projekt Polish Edition
         { "Alpine Adventures",                          "Górska przygoda"                           },

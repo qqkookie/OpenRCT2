@@ -20,6 +20,7 @@
 #    endif
 #    include "../OpenRCT2.h"
 #    include "../config/Config.h"
+#    include "../core/Path.hpp"
 #    include "../localisation/Date.h"
 #    include "../localisation/Language.h"
 #    include "../util/Util.h"
@@ -27,6 +28,7 @@
 
 #    include <libgen.h>
 #    include <locale.h>
+#    include <locale>
 #    include <pwd.h>
 #    include <stdlib.h>
 #    include <sys/file.h>
@@ -142,6 +144,35 @@ bool platform_original_game_data_exists(const utf8* path)
     safe_strcat_path(checkPath, "Data", MAX_PATH);
     safe_strcat_path(checkPath, "g1.dat", MAX_PATH);
     return platform_file_exists(checkPath);
+}
+
+bool platform_original_rct1_data_exists(const utf8* path)
+{
+    char buffer[MAX_PATH], checkPath1[MAX_PATH], checkPath2[MAX_PATH];
+    platform_utf8_to_multibyte(path, buffer, MAX_PATH);
+    safe_strcat_path(buffer, "Data", MAX_PATH);
+    safe_strcpy(checkPath1, buffer, MAX_PATH);
+    safe_strcpy(checkPath2, buffer, MAX_PATH);
+    safe_strcat_path(checkPath1, "CSG1.DAT", MAX_PATH);
+    safe_strcat_path(checkPath2, "CSG1.1", MAX_PATH);
+
+    // Since Linux is case sensitive (and macOS sometimes too), make sure we handle case properly.
+    std::string path1result = Path::ResolveCasing(checkPath1);
+    if (!path1result.empty())
+    {
+        return true;
+    }
+    else
+    {
+        std::string path2result = Path::ResolveCasing(checkPath2);
+
+        if (!path2result.empty())
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // Implement our own version of getumask(), as it is documented being
@@ -421,7 +452,22 @@ uint8_t platform_get_locale_temperature_format()
 
 uint8_t platform_get_locale_date_format()
 {
-    return DATE_FORMAT_DAY_MONTH_YEAR;
+    const std::time_base::dateorder dateorder = std::use_facet<std::time_get<char>>(std::locale()).date_order();
+
+    switch (dateorder)
+    {
+        case std::time_base::mdy:
+            return DATE_FORMAT_MONTH_DAY_YEAR;
+
+        case std::time_base::ymd:
+            return DATE_FORMAT_YEAR_MONTH_DAY;
+
+        case std::time_base::ydm:
+            return DATE_FORMAT_YEAR_DAY_MONTH;
+
+        default:
+            return DATE_FORMAT_DAY_MONTH_YEAR;
+    }
 }
 
 datetime64 platform_get_datetime_now_utc()
@@ -459,6 +505,11 @@ bool platform_process_is_elevated()
 #    else
     return false;
 #    endif // __EMSCRIPTEN__
+}
+
+std::string platform_get_rct1_steam_dir()
+{
+    return "app_285310" PATH_SEPARATOR "depot_285311";
 }
 
 std::string platform_get_rct2_steam_dir()

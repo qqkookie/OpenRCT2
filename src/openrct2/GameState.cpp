@@ -13,7 +13,6 @@
 #include "Editor.h"
 #include "Input.h"
 #include "OpenRCT2.h"
-#include "core/Math.hpp"
 #include "interface/Screenshot.h"
 #include "localisation/Date.h"
 #include "localisation/Localisation.h"
@@ -29,6 +28,8 @@
 #include "world/MapAnimation.h"
 #include "world/Park.h"
 #include "world/Scenery.h"
+
+#include <algorithm>
 
 using namespace OpenRCT2;
 
