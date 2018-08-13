@@ -97,7 +97,8 @@ void GameState::Update()
     // Determine how many times we need to update the game
     if (gGameSpeed == GAMESPEED_NORMAL)
     {
-        numUpdates = Math::Clamp<uint32_t>(1, (gTicksSinceLastUpdate / GAME_UPDATE_TIME_MS), GAME_MAX_UPDATES);
+        numUpdates = gTicksSinceLastUpdate / GAME_UPDATE_TIME_MS;
+        numUpdates = std::clamp<uint32_t>(numUpdates, 1, GAME_MAX_UPDATES);
     }
     else
     {
