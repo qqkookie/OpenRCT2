@@ -134,25 +134,26 @@ uint16_t GetKeyFromName(const char * key_name)
     const char *look = key_name;
     uint16_t modifier = 0;
 
-    if (String::StartsWith(look, "SHIFT +", true))
+    if (_strnicmp(look, "SHIFT +", 7) == 0)
     {
         modifier |= SHIFT; look += 7;
     }
-    if (String::StartsWith(look, "CTRL +", true))
+    if (_strnicmp(look, "CTRL +", 6) == 0)
     {
         modifier |= CTRL; look += 6;
     }
-    if (String::StartsWith(look, "ALT +", true))
+    if (_strnicmp(look, "ALT +", 5) == 0)
     {
         modifier |= ALT; look += 5;
     }
 
     SDL_Scancode scancode = SDL_GetScancodeFromName(look);
     if (scancode == SDL_SCANCODE_UNKNOWN)
+    {
+        Console::WriteLine("Invalid shortcut key: %s", key_name);
         return SHORTCUT_UNDEFINED;
-    else
-        return (((scancode & 0x1ff) | (modifier & 0xf000)) & 0xf1ff);
-    //name = SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)(code & 0x001ff)));
+    }
+    return (((scancode & 0x1ff) | (modifier & 0xf000)) & 0xf1ff);
 }
 
 bool KeyboardShortcuts::Load()
@@ -320,37 +321,26 @@ void KeyboardShortcuts::GetKeyboardMapScroll(const uint8_t* keysState, int32_t* 
         SHORTCUT_SCROLL_MAP_UP, SHORTCUT_SCROLL_MAP_LEFT, SHORTCUT_SCROLL_MAP_DOWN, SHORTCUT_SCROLL_MAP_RIGHT,
         SHORTCUT_SCROLL_MAP_UP_ALT, SHORTCUT_SCROLL_MAP_LEFT_ALT, SHORTCUT_SCROLL_MAP_DOWN_ALT, SHORTCUT_SCROLL_MAP_RIGHT_ALT,
     };
+
     for ( auto& shortcutId : scroll_shortcuts )
-    { 
+    {
         uint16_t shortcutKey = _keys[shortcutId];
-        uint8_t scancode = shortcutKey & 0xFF;
-
-        if (shortcutKey == 0xFFFF)
-            continue;
-        if (!keysState[scancode])
+        if (shortcutKey == SHORTCUT_UNDEFINED || !keysState[shortcutKey & 0x01FF])
             continue;
 
-        if (shortcutKey & SHIFT)
-        {
-            if (!keysState[SDL_SCANCODE_LSHIFT] && !keysState[SDL_SCANCODE_RSHIFT])
-                continue;
-        }
-        if (shortcutKey & CTRL)
-        {
-            if (!keysState[SDL_SCANCODE_LCTRL] && !keysState[SDL_SCANCODE_RCTRL])
-                continue;
-        }
-        if (shortcutKey & ALT)
-        {
-            if (!keysState[SDL_SCANCODE_LALT] && !keysState[SDL_SCANCODE_RALT])
-                continue;
-        }
+        if ((bool)(shortcutKey & SHIFT) !=
+            (keysState[SDL_SCANCODE_LSHIFT] || keysState[SDL_SCANCODE_RSHIFT]))
+            continue;
+        if ((bool)(shortcutKey & CTRL) !=
+            (keysState[SDL_SCANCODE_LCTRL] || keysState[SDL_SCANCODE_RCTRL]))
+            continue;
+        if ((bool)(shortcutKey & ALT) !=
+            (keysState[SDL_SCANCODE_LALT] || keysState[SDL_SCANCODE_RALT]))
+            continue;
 #ifdef __MACOSX__
-        if (shortcutKey & CMD)
-        {
-            if (!keysState[SDL_SCANCODE_LGUI] && !keysState[SDL_SCANCODE_RGUI])
-                continue;
-        }
+        if ((bool)(shortcutKey & CMD) !=
+            (keysState[SDL_SCANCODE_LGUI] || keysState[SDL_SCANCODE_RGUI]))
+            continue;
 #endif
         switch (shortcutId)
         {
@@ -373,6 +363,7 @@ void KeyboardShortcuts::GetKeyboardMapScroll(const uint8_t* keysState, int32_t* 
             default:
                 break;
         }
+        return;
     }
 }
 

@@ -1014,6 +1014,9 @@ static void window_top_toolbar_paint(rct_window* w, rct_drawpixelinfo* dpi)
     }
 }
 
+static void sub_6E1F34(
+    int16_t x, int16_t y, uint16_t selected_scenery, int16_t* grid_x, int16_t* grid_y, uint32_t* parameter_1,
+    uint32_t* parameter_2, uint32_t* parameter_3);
 /**
  *
  *  rct2: 0x006E3158
@@ -1026,7 +1029,7 @@ static void repaint_scenery_tool_down(int16_t x, int16_t y, rct_widgetindex widg
     // edx
     rct_tile_element* tile_element;
     auto flags = VIEWPORT_INTERACTION_MASK_SCENERY & VIEWPORT_INTERACTION_MASK_WALL & VIEWPORT_INTERACTION_MASK_LARGE_SCENERY
-        & VIEWPORT_INTERACTION_MASK_BANNER;
+        & VIEWPORT_INTERACTION_MASK_BANNER & VIEWPORT_INTERACTION_MASK_FOOTPATH_ITEM & VIEWPORT_INTERACTION_MASK_FOOTPATH;
     // This is -2 as banner is 12 but flags are offset different
 
     // not used
@@ -1091,6 +1094,38 @@ static void repaint_scenery_tool_down(int16_t x, int16_t y, rct_widgetindex widg
                 game_do_command(
                     grid_x, 1, grid_y, tile_element->base_height | ((tile_element->properties.banner.position & 0x3) << 8),
                     GAME_COMMAND_SET_BANNER_COLOUR, 0, gWindowSceneryPrimaryColour | (gWindowScenerySecondaryColour << 8));
+            }
+            break;
+        }
+        case VIEWPORT_INTERACTION_ITEM_FOOTPATH:
+        case VIEWPORT_INTERACTION_ITEM_FOOTPATH_ITEM:
+        {
+            // Repaint tool on broken path item will rebuild it and remove litters on path
+            //if (!gSceneryCtrlPressed)
+            //    break;
+            uint32_t parameter_1, parameter_2, parameter_3;
+            int32_t selectedTab = gWindowSceneryTabSelections[gWindowSceneryActiveTabIndex];
+            sub_6E1F34(x, y, selectedTab, &grid_x, &grid_y, &parameter_1, &parameter_2, &parameter_3);
+
+            footpath_remove_litter(grid_x, grid_y, gCommandPosition.z);
+
+            if ( parameter_3 > 5) // streetlights, bench, trashbin
+                break;
+            rct_tile_element* path = map_get_footpath_element(grid_x /32, grid_y / 32, gCommandPosition.z / 8);
+            if (!path || path->GetType() != TILE_ELEMENT_TYPE_PATH)
+                break;
+
+            uint8_t path_scen = footpath_element_get_path_scenery(path);
+            if (path_scen == 0 || !(path->flags & TILE_ELEMENT_FLAG_BROKEN))
+                break;
+            parameter_3 = path_scen; // rebuild broken path scenery item 
+            
+            flags = GAME_COMMAND_FLAG_APPLY | GAME_COMMAND_FLAG_PATH_SCENERY | (parameter_1 & 0xFF00);
+            gGameCommandErrorTitle = STR_CANT_POSITION_THIS_HERE;
+            int32_t cost = game_do_command(grid_x, flags, grid_y, parameter_2, GAME_COMMAND_PLACE_PATH, parameter_3, 0);
+            if (cost != MONEY32_UNDEFINED)
+            {
+                audio_play_sound_at_location(SOUND_PLACE_ITEM, gCommandPosition.x, gCommandPosition.y, gCommandPosition.z);
             }
             break;
         }

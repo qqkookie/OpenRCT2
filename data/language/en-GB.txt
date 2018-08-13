@@ -4575,7 +4575,7 @@ STR_6302    :Slower Speed
 STR_6303    :{WINDOW_COLOUR_2}Completed by: {BLACK}{STRINGID}{NEWLINE}{WINDOW_COLOUR_2}Company value: {BLACK}{CURRENCY}
 STR_6304    :{WINDOW_COLOUR_2}Record days: {BLACK}{COMMA32} days
 STR_6305    :{WINDOW_COLOUR_2}Elapsed: {BLACK}{COMMA32} days
-STR_6306    :Toggle sticking windows.
+STR_6306    :Toggle sticking windows
 STR_6307    :{SMALLFONT}{BLACK}Opening already open window again will toggle it, not stay open
 STR_6308    :Every {INT32} minutes
 STR_6309    :{SMALLFONT}{BLACK}Rotate view 90{DEGREE} counterclockwise
@@ -5302,7 +5302,7 @@ STR_PARK    :From The Ashes
 STR_DTLS    :An old park has fallen into disrepair. You gain a European Union grant to return this deprived area to its former glory! You need to renovate the park and repay the grant.
 
 <N. America - Extreme Hawaiian Island>
-STR_SCNR    :N. America - Extreme Hawaiian Island
+STR_SCNR    :North America - Extreme Hawaiian Island
 STR_PARK    :Wacky Waikiki
 STR_DTLS    :The people of Hawaii are bored of surfing and are looking for something more intense. You need to build a park with this in mind to keep the area's tourist attraction rating high.
 

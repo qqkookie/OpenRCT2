@@ -123,7 +123,7 @@ static rct_widget window_park_stats_widgets[] = {
 
 static rct_widget window_park_objective_widgets[] = {
     MAIN_PARK_WIDGETS,
-    { WWT_BUTTON,           1,  7,      222,    209,    220,    STR_ENTER_NAME_INTO_SCENARIO_CHART,         STR_NONE },             // enter name
+    { WWT_BUTTON,           1,  7,      222,    224,    235,    STR_ENTER_NAME_INTO_SCENARIO_CHART,         STR_NONE },             // enter name
     { WIDGETS_END },
 };
 
@@ -1509,7 +1509,7 @@ static void window_park_objective_mouseup(rct_window* w, rct_widgetindex widgetI
  */
 static void window_park_objective_resize(rct_window* w)
 {
-    window_set_resize(w, 230, 226, 230, 226);
+    window_set_resize(w, 230, 241, 230, 241);
 }
 
 /**
