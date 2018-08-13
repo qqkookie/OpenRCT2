@@ -413,8 +413,19 @@ static void window_loadsave_mouseup(rct_window* w, rct_widgetindex widgetIndex)
             break;
 
         case WIDX_NEW_FILE:
+            // Auto increment trailing number in filename
+            utf8  *look, newname[64];
+            safe_strcpy(newname, _defaultName, 32);
+            look = newname + strlen(newname);
+            while (isdigit(look[-1]))
+                look--;
+            int ver;
+            ver = atol(look);
+            if (ver > 0)
+                String::Format(look, 10, "%d", ver + 1);
+
             window_text_input_open(
-                w, WIDX_NEW_FILE, STR_NONE, STR_FILEBROWSER_FILE_NAME_PROMPT, STR_STRING, (uintptr_t)&_defaultName, 64);
+                w, WIDX_NEW_FILE, STR_NONE, STR_FILEBROWSER_FILE_NAME_PROMPT, STR_STRING, (uintptr_t)&newname, 64);
             break;
 
         case WIDX_NEW_FOLDER:
