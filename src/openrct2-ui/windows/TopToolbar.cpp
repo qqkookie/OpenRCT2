@@ -1102,11 +1102,11 @@ static void repaint_scenery_tool_down(int16_t x, int16_t y, rct_widgetindex widg
         case VIEWPORT_INTERACTION_ITEM_FOOTPATH_ITEM:
         {
             // Repaint tool on broken path item will rebuild it and remove litters on path
-            //if (!gSceneryCtrlPressed)
-            //    break;
+            if (gWindowSceneryActiveTabIndex != 5 /* || !gSceneryCtrlPressed */) // Footpath items tab
+                break;
             uint32_t parameter_1, parameter_2, parameter_3;
-            int32_t selectedTab = gWindowSceneryTabSelections[gWindowSceneryActiveTabIndex];
-            sub_6E1F34(x, y, selectedTab, &grid_x, &grid_y, &parameter_1, &parameter_2, &parameter_3);
+            // int32_t selectedTab = gWindowSceneryTabSelections[gWindowSceneryActiveTabIndex];
+            sub_6E1F34(x, y, 258, &grid_x, &grid_y, &parameter_1, &parameter_2, &parameter_3);
 
             footpath_remove_litter(grid_x, grid_y, gCommandPosition.z);
 

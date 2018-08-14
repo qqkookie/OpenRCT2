@@ -613,25 +613,25 @@ static void window_loadsave_textinput(rct_window* w, rct_widgetindex widgetIndex
 
 static void window_loadsave_compute_max_date_width()
 {
-    // Generate a time object for a relatively wide time: 2000-10-20 00:00:00
+    // Generate a time object for a relatively wide time: 2000-12-25 23:49:49
     std::tm tm;
-    tm.tm_sec = 0;
-    tm.tm_min = 0;
-    tm.tm_hour = 0;
-    tm.tm_mday = 20;
-    tm.tm_mon = 9;
-    tm.tm_year = 100;
+    tm.tm_sec = 49;
+    tm.tm_min = 49;
+    tm.tm_hour = 23;
+    tm.tm_mday = 25;
+    tm.tm_mon = 12;
+    tm.tm_year = 2000;
     tm.tm_wday = 5;
-    tm.tm_yday = 294;
+    tm.tm_yday = 360;
     tm.tm_isdst = -1;
 
     std::time_t long_time = mktime(&tm);
 
     std::string date = Platform::FormatShortDate(long_time);
-    maxDateWidth = gfx_get_string_width(date.c_str());
+    maxDateWidth = gfx_get_string_width(date.c_str())+3;
 
     std::string time = Platform::FormatTime(long_time);
-    maxTimeWidth = gfx_get_string_width(time.c_str());
+    maxTimeWidth = gfx_get_string_width(time.c_str())+3;
 }
 
 static void window_loadsave_invalidate(rct_window* w)
@@ -885,14 +885,16 @@ static void window_loadsave_populate_list(rct_window* w, int32_t includeNewItem,
             path_append_extension(filter, extToken, Util::CountOf(filter));
 
             auto scanner = std::unique_ptr<IFileScanner>(Path::ScanDirectory(filter, false));
+            long timezone;
+            _get_timezone(&timezone);
             while (scanner->Next())
             {
                 LoadSaveListItem newListItem;
                 newListItem.path = scanner->GetPath();
                 newListItem.type = TYPE_FILE;
                 newListItem.date_modified = platform_file_get_modified_time(newListItem.path.c_str());
-
-                // Cache a human-readable version of the modified date.
+                newListItem.date_modified -= timezone;
+                // Cache a human-readable version of the modified local time.
                 newListItem.date_formatted = Platform::FormatShortDate(newListItem.date_modified);
                 newListItem.time_formatted = Platform::FormatTime(newListItem.date_modified);
 

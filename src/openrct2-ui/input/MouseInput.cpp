@@ -214,6 +214,10 @@ static void input_scroll_drag_continue(int32_t x, int32_t y, rct_window* w)
     int32_t dx, dy;
     dx = x - gInputDragLastX;
     dy = y - gInputDragLastY;
+    if (gConfigGeneral.invert_viewport_drag)
+    {
+        dx = -dx; dy = -dy;
+    }
 
     if (scroll->flags & HSCROLLBAR_VISIBLE)
     {

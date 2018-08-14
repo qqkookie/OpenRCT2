@@ -1299,8 +1299,6 @@ void format_string(utf8* dest, size_t size, rct_string_id format, void* args)
     {
         return;
     }
-    size_t oldsize = size;
-    oldsize++;
 
     utf8* end = dest;
     size_t left = size;
