@@ -353,7 +353,8 @@ public:
                         }
                     }
 
-                    if (gConfigSound.audio_focus && gConfigSound.sound_enabled)
+                    if (gConfigSound.audio_focus &&
+                        (gConfigSound.sound_enabled || gConfigSound.ride_music_enabled))
                     {
                         if (e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
                         {
