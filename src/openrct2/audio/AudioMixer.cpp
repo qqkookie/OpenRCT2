@@ -35,6 +35,9 @@ void Mixer_Init(const char* device)
         device = "";
     }
     audioContext->SetOutputDevice(std::string(device));
+
+    if (!gConfigSound.sound_enabled && !gConfigSound.ride_music_enabled)
+        Mixer_SetVolume(0);
 }
 
 void* Mixer_Play_Effect(size_t id, int32_t loop, int32_t volume, float pan, double rate, int32_t deleteondone)

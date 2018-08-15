@@ -786,6 +786,7 @@ static void window_options_mouseup(rct_window* w, rct_widgetindex widgetIndex)
                     window_invalidate(w);
                     break;
             }
+            Mixer_SetVolume((gConfigSound.sound_enabled || gConfigSound.ride_music_enabled) ? 1 : 0);
             break;
 
         case WINDOW_OPTIONS_PAGE_CONTROLS_AND_INTERFACE:

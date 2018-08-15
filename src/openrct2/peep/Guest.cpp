@@ -1176,6 +1176,17 @@ void rct_peep::CheckCantFindExit()
         peep_is_lost_countdown = 90;
 }
 
+bool bad_color(uint8_t color)
+{
+    static uint8_t bad_colors[] = { COLOUR_DARK_PURPLE, COLOUR_LIGHT_PURPLE, COLOUR_ICY_BLUE,
+        COLOUR_DARK_GREEN, COLOUR_MOSS_GREEN, COLOUR_OLIVE_GREEN, COLOUR_DARK_OLIVE_GREEN,
+        COLOUR_DARK_YELLOW, COLOUR_SATURATED_BROWN,  COLOUR_DARK_BROWN, };
+    for (auto bad : bad_colors)
+        if (color == bad)
+            return true;
+    return false;
+}
+
 /** Main logic to decide whether a peep should buy an item in question
  *
  * Also handles the purchase as well, so once it returns, the peep will have the
@@ -1368,8 +1379,11 @@ loc_69B221:
         item_standard_flags |= (1u << shopItem);
 
     uint8_t color = ride->track_colour_main[0];
-    if ( rand() % 4 != 0 )
-        color = rand() % COLOUR_COUNT;
+    // Randomise color, try to avoid bad color
+    if (bad_color(color) || rand() % 3)
+        color = (rand() % COLOUR_COUNT);
+    if (bad_color(color))
+        color = (rand() % COLOUR_COUNT);
 
     if (shopItem == SHOP_ITEM_TSHIRT)
         tshirt_colour = color;
