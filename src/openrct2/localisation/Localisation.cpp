@@ -35,7 +35,6 @@
 #include "Date.h"
 #include "Localisation.h"
 
-// Some tooltips of Asian language in UTF8 exceeds 400+ bytes
 char gCommonStringFormatBuffer[512];
 uint8_t gCommonFormatArgs[80];
 uint8_t gMapTooltipFormatArgs[40];

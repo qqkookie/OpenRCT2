@@ -122,12 +122,14 @@ enum WINDOW_OPTIONS_WIDGET_IDX {
     // Audio
     WIDX_SOUND = WIDX_PAGE_START,
     WIDX_SOUND_DROPDOWN,
+    WIDX_MASTER_SOUND_CHECKBOX,
     WIDX_SOUND_CHECKBOX,
     WIDX_MUSIC_CHECKBOX,
     WIDX_AUDIO_FOCUS_CHECKBOX,
     WIDX_TITLE_MUSIC_LABEL,
     WIDX_TITLE_MUSIC,
     WIDX_TITLE_MUSIC_DROPDOWN,
+    WIDX_MASTER_VOLUME,
     WIDX_SOUND_VOLUME,
     WIDX_MUSIC_VOLUME,
 
@@ -174,6 +176,7 @@ enum WINDOW_OPTIONS_WIDGET_IDX {
     WIDX_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM,
     WIDX_SAVE_PLUGIN_DATA_CHECKBOX,
     WIDX_STAY_CONNECTED_AFTER_DESYNC,
+    WIDX_ALWAYS_NATIVE_LOADSAVE,
     WIDX_AUTOSAVE,
     WIDX_AUTOSAVE_SPINNER,
     WIDX_AUTOSAVE_SPINNER_UP,
@@ -280,14 +283,16 @@ static rct_widget window_options_audio_widgets[] = {
     MAIN_OPTIONS_WIDGETS,
     { WWT_DROPDOWN,         1,  10,     299,    53,     64,     STR_NONE,               STR_NONE },                     // Audio device
     { WWT_BUTTON,           1,  288,    298,    54,     63,     STR_DROPDOWN_GLYPH,     STR_AUDIO_DEVICE_TIP },
-    { WWT_CHECKBOX,         1,  10,     229,    69,     80,     STR_SOUND_EFFECTS,      STR_SOUND_EFFECTS_TIP },        // Enable / disable sound effects
-    { WWT_CHECKBOX,         1,  10,     229,    84,     95,     STR_RIDE_MUSIC,         STR_RIDE_MUSIC_TIP },           // Enable / disable ride music
-    { WWT_CHECKBOX,         1,  10,     299,    98,     110,    STR_AUDIO_FOCUS,        STR_AUDIO_FOCUS_TIP },          // Enable / disable audio disabled on focus lost
-    { WWT_LABEL,            1,  10,     154,    113,    125,    STR_OPTIONS_MUSIC_LABEL,STR_NONE },                     // Title music label
-    { WWT_DROPDOWN,         1,  155,    299,    112,    124,    STR_NONE,               STR_NONE },                     // Title music
-    { WWT_BUTTON,           1,  288,    298,    113,    123,    STR_DROPDOWN_GLYPH,     STR_TITLE_MUSIC_TIP },
-    { WWT_SCROLL,           1,  155,    299,    68,     80,     SCROLL_HORIZONTAL,      STR_NONE },                     // Sound effect volume
-    { WWT_SCROLL,           1,  155,    299,    83,     95,     SCROLL_HORIZONTAL,      STR_NONE },                     // Music volume
+    { WWT_CHECKBOX,         1,  10,     229,    69,     80,     STR_MASTER_VOLUME,      STR_MASTER_VOLUME_TIP },        // Enable / disable master sound
+    { WWT_CHECKBOX,         1,  10,     229,    84,     95,     STR_SOUND_EFFECTS,      STR_SOUND_EFFECTS_TIP },        // Enable / disable sound effects
+    { WWT_CHECKBOX,         1,  10,     229,    99,     110,    STR_RIDE_MUSIC,         STR_RIDE_MUSIC_TIP },           // Enable / disable ride music
+    { WWT_CHECKBOX,         1,  10,     299,    113,    125,    STR_AUDIO_FOCUS,        STR_AUDIO_FOCUS_TIP },          // Enable / disable audio disabled on focus lost
+    { WWT_LABEL,            1,  10,     154,    128,    140,    STR_OPTIONS_MUSIC_LABEL,STR_NONE },                     // Title music label
+    { WWT_DROPDOWN,         1,  155,    299,    127,    139,    STR_NONE,               STR_NONE },                     // Title music
+    { WWT_BUTTON,           1,  288,    298,    128,    138,    STR_DROPDOWN_GLYPH,     STR_TITLE_MUSIC_TIP },
+    { WWT_SCROLL,           1,  155,    299,    68,     80,     SCROLL_HORIZONTAL,      STR_NONE },                     // Master volume
+    { WWT_SCROLL,           1,  155,    299,    83,     95,     SCROLL_HORIZONTAL,      STR_NONE },                     // Sound effect volume
+    { WWT_SCROLL,           1,  155,    299,    98,     110,    SCROLL_HORIZONTAL,      STR_NONE },                     // Music volume
     { WIDGETS_END },
 };
 
@@ -355,11 +360,17 @@ static rct_widget window_options_advanced_widgets[] = {
     { WWT_CHECKBOX,         2,  10,     299,    84,      95,    STR_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM,  STR_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM_TIP },    // Allow loading with incorrect checksum
     { WWT_CHECKBOX,         2,  10,     299,    99,     110,    STR_SAVE_PLUGIN_DATA,                       STR_SAVE_PLUGIN_DATA_TIP },                         // Export plug-in objects with saved games
     { WWT_CHECKBOX,         2,  10,     299,    114,    125,    STR_STAY_CONNECTED_AFTER_DESYNC,            STR_STAY_CONNECTED_AFTER_DESYNC_TIP },              // Do not disconnect after the client desynchronises with the server
-    { WWT_LABEL,            1,  23,     298,    130,    159,    STR_OPTIONS_AUTOSAVE_FREQUENCY_LABEL,       STR_NONE },
-    SPINNER_WIDGETS       ( 1,  165,    289,    130,    141,    STR_NONE,                   				STR_AUTOSAVE_FREQUENCY_TIP ),                       // NB: 3 widgets
-    { WWT_LABEL,            1,  23,     298,    148,    159,    STR_PATH_TO_RCT1,                           STR_PATH_TO_RCT1_TIP },                             // RCT 1 path text
-    { WWT_BUTTON,           1,  24,     289,    163,    176,    STR_NONE,                                   STR_STRING_TOOLTIP },                               // RCT 1 path button
-    { WWT_BUTTON,           1,  289,    299,    163,    176,    STR_CLOSE_X,                                STR_PATH_TO_RCT1_CLEAR_TIP },                       // RCT 1 path clear button
+    { WWT_CHECKBOX,         1,  10,     299,    129,    140,    STR_ALWAYS_NATIVE_LOADSAVE,                 STR_ALWAYS_NATIVE_LOADSAVE_TIP },                   // Use native load/save window
+/*
+    { WWT_DROPDOWN,         1,  165,    299,    145,    157,    STR_NONE,                                   STR_NONE },                                         // Autosave dropdown
+    { WWT_BUTTON,           1,  288,    298,    146,    156,    STR_DROPDOWN_GLYPH,                         STR_AUTOSAVE_FREQUENCY_TIP },                       // Autosave dropdown button
+*/
+    { WWT_LABEL,            1,  23,     298,    145,    159,    STR_OPTIONS_AUTOSAVE_FREQUENCY_LABEL,       STR_NONE },
+    SPINNER_WIDGETS       ( 1,  165,    289,    145,    156,    STR_NONE,                                   STR_AUTOSAVE_FREQUENCY_TIP ),                       // NB: 3 widgets
+    { WWT_LABEL,            1,  23,     298,    165,    176,    STR_PATH_TO_RCT1,                           STR_PATH_TO_RCT1_TIP },                             // RCT 1 path text
+    { WWT_BUTTON,           1,  24,     289,    180,    193,    STR_NONE,                                   STR_STRING_TOOLTIP },                               // RCT 1 path button
+    { WWT_BUTTON,           1,  289,    299,    180,    193,    STR_CLOSE_X,                                STR_PATH_TO_RCT1_CLEAR_TIP },                       // RCT 1 path clear button
+
     { WIDGETS_END },
 };
 
@@ -550,6 +561,7 @@ static uint64_t window_options_page_enabled_widgets[] = {
     MAIN_OPTIONS_ENABLED_WIDGETS |
     (1 << WIDX_SOUND) |
     (1 << WIDX_SOUND_DROPDOWN) |
+    (1 << WIDX_MASTER_SOUND_CHECKBOX) |
     (1 << WIDX_SOUND_CHECKBOX) |
     (1 << WIDX_MUSIC_CHECKBOX) |
     (1 << WIDX_AUDIO_FOCUS_CHECKBOX) |
@@ -592,6 +604,7 @@ static uint64_t window_options_page_enabled_widgets[] = {
     (1 << WIDX_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM) |
     (1 << WIDX_SAVE_PLUGIN_DATA_CHECKBOX) |
     (1 << WIDX_STAY_CONNECTED_AFTER_DESYNC) |
+    (1 << WIDX_ALWAYS_NATIVE_LOADSAVE) |
     (1 << WIDX_AUTOSAVE) |
     (1 << WIDX_AUTOSAVE_SPINNER) |
     (1 << WIDX_AUTOSAVE_SPINNER_UP) |
@@ -771,6 +784,18 @@ static void window_options_mouseup(rct_window* w, rct_widgetindex widgetIndex)
                     config_save_default();
                     window_invalidate(w);
                     break;
+
+                case WIDX_MASTER_SOUND_CHECKBOX:
+                    gConfigSound.master_sound_enabled = !gConfigSound.master_sound_enabled;
+                    if (!gConfigSound.master_sound_enabled)
+                        audio_pause_sounds();
+                    else
+                        audio_unpause_sounds();
+                    window_invalidate_by_class(WC_TOP_TOOLBAR);
+                    config_save_default();
+                    window_invalidate(w);
+                    break;
+
                 case WIDX_MUSIC_CHECKBOX:
                     gConfigSound.ride_music_enabled = !gConfigSound.ride_music_enabled;
                     if (!gConfigSound.ride_music_enabled)
@@ -780,6 +805,7 @@ static void window_options_mouseup(rct_window* w, rct_widgetindex widgetIndex)
                     config_save_default();
                     window_invalidate(w);
                     break;
+
                 case WIDX_AUDIO_FOCUS_CHECKBOX:
                     gConfigSound.audio_focus = !gConfigSound.audio_focus;
                     config_save_default();
@@ -919,6 +945,11 @@ static void window_options_mouseup(rct_window* w, rct_widgetindex widgetIndex)
                     break;
                 case WIDX_STAY_CONNECTED_AFTER_DESYNC:
                     gConfigNetwork.stay_connected = !gConfigNetwork.stay_connected;
+                    config_save_default();
+                    window_invalidate(w);
+                    break;
+                case WIDX_ALWAYS_NATIVE_LOADSAVE:
+                    gConfigGeneral.use_native_browse_dialog = !gConfigGeneral.use_native_browse_dialog;
                     config_save_default();
                     window_invalidate(w);
                     break;
@@ -1557,6 +1588,17 @@ static void window_options_dropdown(rct_window* w, rct_widgetindex widgetIndex, 
     }
 }
 
+static void initialize_scroll_position(rct_window* w, rct_widgetindex widget_index, int32_t scroll_id, uint8_t volume)
+{
+    rct_widget* widget = &window_options_audio_widgets[widget_index];
+    rct_scroll* scroll = &w->scrolls[scroll_id];
+
+    int widget_size = scroll->h_right - (widget->right - widget->left - 1);
+    scroll->h_left = ceil(volume / 100.0f * widget_size);
+
+    widget_scroll_update_thumbs(w, widget_index);
+}
+
 /**
  *
  *  rct2: 0x006BAD48
@@ -1762,24 +1804,22 @@ static void window_options_invalidate(rct_window* w)
             window_options_audio_widgets[WIDX_TITLE_MUSIC].text = window_options_title_music_names[gConfigSound.title_music];
 
             widget_set_checkbox_value(w, WIDX_SOUND_CHECKBOX, gConfigSound.sound_enabled);
+            widget_set_checkbox_value(w, WIDX_MASTER_SOUND_CHECKBOX, gConfigSound.master_sound_enabled);
             widget_set_checkbox_value(w, WIDX_MUSIC_CHECKBOX, gConfigSound.ride_music_enabled);
             widget_set_checkbox_value(w, WIDX_AUDIO_FOCUS_CHECKBOX, gConfigSound.audio_focus);
+            widget_set_enabled(w, WIDX_SOUND_CHECKBOX, gConfigSound.master_sound_enabled);
+            widget_set_enabled(w, WIDX_MUSIC_CHECKBOX, gConfigSound.master_sound_enabled);
 
             // Initialize only on first frame, otherwise the scrollbars wont be able to be modified
             if (w->frame_no == 0)
             {
-                widget = &window_options_audio_widgets[WIDX_SOUND_VOLUME];
-                w->scrolls[0].h_left = (int16_t)ceil(
-                    (gConfigSound.sound_volume / 100.0f) * (w->scrolls[0].h_right - ((widget->right - widget->left) - 1)));
-                widget = &window_options_audio_widgets[WIDX_MUSIC_VOLUME];
-                w->scrolls[1].h_left = (int16_t)ceil(
-                    (gConfigSound.ride_music_volume / 100.0f) * (w->scrolls[1].h_right - ((widget->right - widget->left) - 1)));
+                initialize_scroll_position(w, WIDX_MASTER_VOLUME, 0, gConfigSound.master_volume);
+                initialize_scroll_position(w, WIDX_SOUND_VOLUME, 1, gConfigSound.sound_volume);
+                initialize_scroll_position(w, WIDX_MUSIC_VOLUME, 2, gConfigSound.ride_music_volume);
             }
 
-            widget_scroll_update_thumbs(w, WIDX_SOUND_VOLUME);
-            widget_scroll_update_thumbs(w, WIDX_MUSIC_VOLUME);
+            break;
         }
-        break;
 
         case WINDOW_OPTIONS_PAGE_CONTROLS_AND_INTERFACE:
         {
@@ -1848,6 +1888,7 @@ static void window_options_invalidate(rct_window* w)
                 w, WIDX_ALLOW_LOADING_WITH_INCORRECT_CHECKSUM, gConfigGeneral.allow_loading_with_incorrect_checksum);
             widget_set_checkbox_value(w, WIDX_SAVE_PLUGIN_DATA_CHECKBOX, gConfigGeneral.save_plugin_data);
             widget_set_checkbox_value(w, WIDX_STAY_CONNECTED_AFTER_DESYNC, gConfigNetwork.stay_connected);
+            widget_set_checkbox_value(w, WIDX_ALWAYS_NATIVE_LOADSAVE, gConfigGeneral.use_native_browse_dialog);
             break;
 
         case WINDOW_OPTIONS_PAGE_TWITCH:
@@ -1870,6 +1911,12 @@ static void window_options_invalidate(rct_window* w)
     w->widgets[WIDX_PAGE_BACKGROUND].bottom = w->height - 1;
 }
 
+static uint8_t get_scroll_percentage(rct_widget* widget, rct_scroll* scroll)
+{
+    uint8_t width = widget->right - widget->left - 1;
+    return (float)scroll->h_left / (scroll->h_right - width) * 100;
+}
+
 static void window_options_update(rct_window* w)
 {
     // Tab animation
@@ -1878,24 +1925,34 @@ static void window_options_update(rct_window* w)
 
     if (w->page == WINDOW_OPTIONS_PAGE_AUDIO)
     {
-        rct_widget* widget = &window_options_audio_widgets[WIDX_SOUND_VOLUME];
-        uint8_t sound_volume = (uint8_t)(
-            ((float)w->scrolls[0].h_left / (w->scrolls[0].h_right - ((widget->right - widget->left) - 1))) * 100);
-        widget = &window_options_audio_widgets[WIDX_MUSIC_VOLUME];
-        uint8_t ride_music_volume = (uint8_t)(
-            ((float)w->scrolls[1].h_left / (w->scrolls[1].h_right - ((widget->right - widget->left) - 1))) * 100);
+        rct_widget* widget;
+
+        widget = &window_options_audio_widgets[WIDX_MASTER_VOLUME];
+        uint8_t master_volume = get_scroll_percentage(widget, &w->scrolls[0]);
+        if (master_volume != gConfigSound.master_volume)
+        {
+            gConfigSound.master_volume = master_volume;
+            config_save_default();
+            widget_invalidate(w, WIDX_MASTER_VOLUME);
+        }
+
+        widget = &window_options_audio_widgets[WIDX_SOUND_VOLUME];
+        uint8_t sound_volume = get_scroll_percentage(widget, &w->scrolls[1]);
         if (sound_volume != gConfigSound.sound_volume)
         {
             gConfigSound.sound_volume = sound_volume;
             config_save_default();
+            widget_invalidate(w, WIDX_SOUND_VOLUME);
         }
+
+        widget = &window_options_audio_widgets[WIDX_MUSIC_VOLUME];
+        uint8_t ride_music_volume = get_scroll_percentage(widget, &w->scrolls[2]);
         if (ride_music_volume != gConfigSound.ride_music_volume)
         {
             gConfigSound.ride_music_volume = ride_music_volume;
             config_save_default();
+            widget_invalidate(w, WIDX_MUSIC_VOLUME);
         }
-        widget_invalidate(w, WIDX_SOUND_VOLUME);
-        widget_invalidate(w, WIDX_MUSIC_VOLUME);
     }
 }
 
@@ -2050,7 +2107,7 @@ static void window_options_scrollgetsize(rct_window* w, int32_t scrollIndex, int
 {
     if (w->page == WINDOW_OPTIONS_PAGE_AUDIO)
     {
-        *width = 1000;
+        *width = 500;
     }
 }
 

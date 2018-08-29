@@ -202,6 +202,7 @@ namespace Config
             model->last_save_landscape_directory = reader->GetCString("last_landscape_directory", nullptr);
             model->last_save_scenario_directory = reader->GetCString("last_scenario_directory", nullptr);
             model->last_save_track_directory = reader->GetCString("last_track_directory", nullptr);
+            model->use_native_browse_dialog = reader->GetBoolean("use_native_browse_dialog", false);
             model->window_limit = reader->GetInt32("window_limit", WINDOW_LIMIT_MAX);
             model->zoom_to_cursor = reader->GetBoolean("zoom_to_cursor", true);
             model->toggle_window = reader->GetBoolean("toggle_window", true);
@@ -274,6 +275,7 @@ namespace Config
         writer->WriteString("last_landscape_directory", model->last_save_landscape_directory);
         writer->WriteString("last_scenario_directory", model->last_save_scenario_directory);
         writer->WriteString("last_track_directory", model->last_save_track_directory);
+        writer->WriteBoolean("use_native_browse_dialog", model->use_native_browse_dialog);
         writer->WriteInt32("window_limit", model->window_limit);
         writer->WriteBoolean("zoom_to_cursor", model->zoom_to_cursor);
         writer->WriteBoolean("toggle_window", model->toggle_window);
@@ -322,6 +324,8 @@ namespace Config
         if (reader->ReadSection("sound"))
         {
             auto model = &gConfigSound;
+            model->device = reader->GetCString("audio_device", nullptr);
+            model->master_sound_enabled = reader->GetBoolean("master_sound", true);
             model->master_volume = reader->GetInt32("master_volume", 100);
             model->title_music = reader->GetInt32("title_music", 2);
             model->sound_enabled = reader->GetBoolean("sound", true);
@@ -329,7 +333,6 @@ namespace Config
             model->ride_music_enabled = reader->GetBoolean("ride_music", true);
             model->ride_music_volume = reader->GetInt32("ride_music_volume", 100);
             model->audio_focus = reader->GetBoolean("audio_focus", false);
-            model->device = reader->GetCString("audio_device", nullptr);
         }
     }
 
@@ -337,6 +340,8 @@ namespace Config
     {
         auto model = &gConfigSound;
         writer->WriteSection("sound");
+        writer->WriteString("audio_device", model->device);
+        writer->WriteBoolean("master_sound", model->master_sound_enabled);
         writer->WriteInt32("master_volume", model->master_volume);
         writer->WriteInt32("title_music", model->title_music);
         writer->WriteBoolean("sound", model->sound_enabled);
@@ -344,7 +349,6 @@ namespace Config
         writer->WriteBoolean("ride_music", model->ride_music_enabled);
         writer->WriteInt32("ride_music_volume", model->ride_music_volume);
         writer->WriteBoolean("audio_focus", model->audio_focus);
-        writer->WriteString("audio_device", model->device);
     }
 
     static void ReadNetwork(IIniReader* reader)
@@ -607,13 +611,13 @@ namespace Config
         log_verbose("config_find_rct1_path(...)");
 
         static constexpr const utf8* searchLocations[] = {
+            R"(C:\Program Files\Steam\steamapps\common\Rollercoaster Tycoon Deluxe)",
+            R"(C:\Program Files (x86)\Steam\steamapps\common\Rollercoaster Tycoon Deluxe)",
             R"(C:\GOG Games\RollerCoaster Tycoon Deluxe)",
             R"(C:\Program Files\GalaxyClient\Games\RollerCoaster Tycoon Deluxe)",
-            R"(C:\Program Files\Hasbro Interactive\RollerCoaster Tycoon)",
-            R"(C:\Program Files\Steam\steamapps\common\Rollercoaster Tycoon Deluxe)",
             R"(C:\Program Files (x86)\GalaxyClient\Games\RollerCoaster Tycoon Deluxe)",
+            R"(C:\Program Files\Hasbro Interactive\RollerCoaster Tycoon)",
             R"(C:\Program Files (x86)\Hasbro Interactive\RollerCoaster Tycoon)",
-            R"(C:\Program Files (x86)\Steam\steamapps\common\Rollercoaster Tycoon Deluxe)",
         };
 
         for (const utf8* location : searchLocations)
@@ -651,17 +655,17 @@ namespace Config
         log_verbose("config_find_rct2_path(...)");
 
         static constexpr const utf8* searchLocations[] = {
-            R"(C:\GOG Games\RollerCoaster Tycoon 2 Triple Thrill Pack)",
-            R"(C:\Program Files\Atari\RollerCoaster Tycoon 2)",
-            R"(C:\Program Files\GalaxyClient\Games\RollerCoaster Tycoon 2 Triple Thrill Pack)",
-            R"(C:\Program Files\Infogrames\RollerCoaster Tycoon 2)",
-            R"(C:\Program Files\Infogrames Interactive\RollerCoaster Tycoon 2)",
             R"(C:\Program Files\Steam\steamapps\common\Rollercoaster Tycoon 2)",
-            R"(C:\Program Files (x86)\Atari\RollerCoaster Tycoon 2)",
+            R"(C:\Program Files (x86)\Steam\steamapps\common\Rollercoaster Tycoon 2)",
+            R"(C:\GOG Games\RollerCoaster Tycoon 2 Triple Thrill Pack)",
+            R"(C:\Program Files\GalaxyClient\Games\RollerCoaster Tycoon 2 Triple Thrill Pack)",
             R"(C:\Program Files (x86)\GalaxyClient\Games\RollerCoaster Tycoon 2 Triple Thrill Pack)",
+            R"(C:\Program Files\Atari\RollerCoaster Tycoon 2)",
+            R"(C:\Program Files (x86)\Atari\RollerCoaster Tycoon 2)",
+            R"(C:\Program Files\Infogrames\RollerCoaster Tycoon 2)",
             R"(C:\Program Files (x86)\Infogrames\RollerCoaster Tycoon 2)",
+            R"(C:\Program Files\Infogrames Interactive\RollerCoaster Tycoon 2)",
             R"(C:\Program Files (x86)\Infogrames Interactive\RollerCoaster Tycoon 2)",
-            R"(C:\Program Files (x86)\Steam\steamapps\common\Rollercoaster Tycoon 2)"
         };
 
         for (const utf8* location : searchLocations)

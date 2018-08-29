@@ -329,17 +329,18 @@ time_t platform_file_get_modified_time(const utf8* path)
     BOOL result = GetFileAttributesExW(wPath, GetFileExInfoStandard, &data);
     free(wPath);
 
-    if (result)
-    {
-        ULARGE_INTEGER ull;
-        ull.LowPart = data.ftLastWriteTime.dwLowDateTime;
-        ull.HighPart = data.ftLastWriteTime.dwHighDateTime;
-        return ull.QuadPart / 10000000ULL - 11644473600ULL;
-    }
-    else
-    {
+    if (!result)
         return 0;
-    }
+
+    FILETIME localFileTime;
+    result = FileTimeToLocalFileTime(&data.ftLastWriteTime, &localFileTime);
+    if (!result)
+        return 0;
+
+    ULARGE_INTEGER ull;
+    ull.LowPart = localFileTime.dwLowDateTime;
+    ull.HighPart = localFileTime.dwHighDateTime;
+    return ull.QuadPart / 10000000ULL - 11644473600ULL;
 }
 
 uint8_t platform_get_locale_currency()
@@ -668,6 +669,7 @@ void platform_setup_file_associations()
     windows_setup_file_association(".sc6", "RCT2 Scenario (.sc6)", "Play", "\"%1\"", 0);
     windows_setup_file_association(".sv4", "RCT1 Saved Game (.sc4)", "Play", "\"%1\"", 0);
     windows_setup_file_association(".sv6", "RCT2 Saved Game (.sv6)", "Play", "\"%1\"", 0);
+    windows_setup_file_association(".sv7", "RCT Modified Saved Game (.sv7)", "Play", "\"%1\"", 0);
     windows_setup_file_association(".td4", "RCT1 Track Design (.td4)", "Install", "\"%1\"", 0);
     windows_setup_file_association(".td6", "RCT2 Track Design (.td6)", "Install", "\"%1\"", 0);
 
@@ -682,6 +684,7 @@ void platform_remove_file_associations()
     windows_remove_file_association(".sc6");
     windows_remove_file_association(".sv4");
     windows_remove_file_association(".sv6");
+    windows_remove_file_association(".sv7");
     windows_remove_file_association(".td4");
     windows_remove_file_association(".td6");
 

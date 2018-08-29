@@ -1,11 +1,16 @@
-0.2.0+ (in development)
+0.2.1+ (in development)
+------------------------------------------------------------------------
+
+0.2.1 (2018-08-26)
 ------------------------------------------------------------------------
 - Feature: [#5993] Ride window prices can now be set via text input.
 - Feature: [#6998] Guests now wait for passing vehicles before crossing railway tracks.
+- Feature: [#7658] Add option to always use system file browsing window.
 - Feature: [#7694] Debug option to visualize paths that the game detects as wide.
 - Feature: [#7713] The virtual floor now takes land ownership rights into account.
 - Feature: [#7771] Danish translation.
 - Feature: [#7797, #7802, #7821, #7830] Add sprite font glyphs for Danish, Norwegian, Russian, Turkish, Catalan and Romanian.
+- Feature: [#7848] Add a master volume slider to audio options screen.
 - Feature: [#7868] Placing scenery while holding shift now scales appropriately with zoom levels.
 - Feature: [#7882] Auto-detect Steam and GOG installations of RCT1.
 - Feature: [#7885] Turkish translation.
@@ -35,6 +40,11 @@
 - Fix: [#7793] Duplicate private keys generated.
 - Fix: [#7817] No sprite font glyph for interpunct.
 - Fix: [#7823] You can build mazes in pause mode.
+- Fix: [#7804] Russian ride descriptions are cut off.
+- Fix: [#7872] CJK tooltips are often cut off.
+- Fix: [#7895] Import of Mega Park and the RCT1 title music do not work on some RCT1 sources.
+- Improved: [#7899] Timestamps in the load/save screen are now displayed using local timezone instead of GMT.
+- Improved: [#7918] Better RCT2 detection if both disc and GOG/Steam versions are installed.
 
 0.2.0 (2018-06-10)
 ------------------------------------------------------------------------
